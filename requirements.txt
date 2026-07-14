@@ -1,0 +1,16 @@
+# Python dependencies for the GTFS-NeTEx MVD notebooks.
+# Install with: pip install -r requirements.txt
+#
+# This file covers the countries cleaned up so far (DACH: Austria, Switzerland,
+# Germany; Southern Europe: Spain, Italy; Northern Europe: Finland, Norway, Sweden;
+# Western Europe: Belgium, France, Netherlands, Luxembourg; Central and Eastern Europe:
+# Poland, Romania, Czech Republic). Update it whenever a newly cleaned country notebook
+# introduces a package not already listed below.
+
+pandas>=2.0          # GTFS table loading and MVD data preparation — used in every notebook
+numpy>=1.24           # coordinate array math for stop matching (Austria, Italy, Finland, Sweden)
+scikit-learn>=1.3     # BallTree nearest-neighbour stop matching (Italy, Finland)
+scipy>=1.10           # cKDTree nearest-neighbour stop matching (Sweden, Netherlands)
+matplotlib>=3.7       # plotting (Austria)
+haversine>=2.8         # coordinate-distance stop matching (France, Luxembourg)
+pyproj>=3.5            # RD New -> WGS84 coordinate conversion (Netherlands)
