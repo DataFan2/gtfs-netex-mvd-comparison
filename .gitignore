@@ -21,3 +21,6 @@
 # Python
 __pycache__/
 *.pyc
+
+# Leftover verification scripts (not part of the actual analysis)
+Calendar_Unified_Method/_test_script*.py
