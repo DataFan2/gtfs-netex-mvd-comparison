@@ -25,7 +25,7 @@ top to bottom.
 - Coverage: same validity window as GTFS (2025-12-14 to 2026-12-12)
 - Access: **registration required** — create an account on the portal before downloading (no direct/deep link is available without an account, so only the portal homepage is listed above)
 
-Notebook: `DACH/MVD Austria/Austria.ipynb`
+Notebook: `DACH/Austria.ipynb`
 
 ---
 
@@ -47,7 +47,7 @@ Notebook: `DACH/MVD Austria/Austria.ipynb`
 - Access: no registration required — direct download
 - Accessed: 8 April 2026, under license "Non-commercial Allowed / Commercial Allowed / Reference Required"
 
-Notebook: `DACH/Switzerland/Switzerland_MVD.ipynb`
+Notebook: `DACH/Switzerland_MVD.ipynb`
 
 ---
 
@@ -69,7 +69,7 @@ Notebook: `DACH/Switzerland/Switzerland_MVD.ipynb`
 
 Both datasets accessed 13 April 2026. Data producer: DELFI e.V. in cooperation with all German federal state transport systems and long-distance rail operators.
 
-Notebook: `DACH/Germany/Germany_MVD.ipynb`
+Notebook: `DACH/Germany_MVD.ipynb`
 
 ---
 
@@ -229,10 +229,15 @@ Notebook: `Western Europe/Belgium_MVD.ipynb`
 
 ### France
 
-**GTFS and NeTEx — SNCF Open Data**
-- Provider: SNCF (Société Nationale des Chemins de fer Français), French national railway operator
-- Source: SNCF Open Data platform (`ressources.data.sncf.com`)
+**GTFS and NeTEx — SNCF Voyageurs, via the French National Access Point**
+- Provider: French National Access Point (`transport.data.gouv.fr`)
+- Publisher: SNCF Voyageurs
+- Dataset page: https://transport.data.gouv.fr/datasets/horaires-sncf
 - Files used: `Export_OpenData_SNCF_GTFS_NewTripId.zip`, `export-opendata-sncf-netex.zip`
+- Download URLs:
+  - GTFS: https://eu.ftp.opendatasoft.com/sncf/plandata/Export_OpenData_SNCF_GTFS_NewTripId.zip
+  - NeTEx: https://eu.ftp.opendatasoft.com/sncf/plandata/export-opendata-sncf-netex.zip
+- License: ODbL (Open Database Licence)
 - Coverage: national SNCF network, validity 2026-04-26 to 2026-09-23 (NeTEx) / 2026-04-26 to 2026-10-31 (GTFS, longer tail)
 - Access: no registration required — direct download
 - Accessed: 26 April 2026
@@ -357,3 +362,30 @@ by identifier scoping issues on the NeTEx side, and the calendar comparison is n
 since no reliable link between GTFS services and NeTEx operating periods could be established.
 
 Notebook: `CEE/Czech Republic_MVD.ipynb`
+
+---
+
+### Poland
+
+**GTFS — PolishTrainsGTFS (community)**
+- Provider: Mikołaj Kuranowski, community-maintained Polish rail GTFS feed
+- Source: https://mkuran.pl/gtfs/
+- File used: `polish_trains.zip`
+- Coverage: all major Polish rail operators — PolRegio, PKP Intercity, Koleje Mazowieckie,
+  PKP SKM Trójmieście, Koleje Śląskie, Koleje Dolnośląskie, Koleje Wielkopolskie, SKM Warszawa,
+  Łódzka Kolej Aglomeracyjna, Koleje Małopolskie, Arriva RP, RegioJet, Leo Express (13 operators)
+- Schedules sourced from PKP PLK (national rail infrastructure manager) open data API
+- License: PKP PLK public sector data usage terms; Koleje Mazowieckie public sector data usage terms
+- Access: no registration required — direct download
+- Accessed: 13 July 2026
+- Note: this is a community-maintained feed, not an official government publication. Known data
+  caveats are documented in the [PolishTrainsGTFS README](https://github.com/MKuranowski/PolishTrainsGTFS?tab=readme-ov-file#data-caveats).
+
+**NeTEx — not available**
+
+Poland's National Access Point (`przyjazdy.pl`), published by the Ministry of Infrastructure,
+does not provide a publicly downloadable NeTEx dataset. Because no NeTEx dataset is available,
+the GTFS–NeTEx MVD comparison cannot be performed for Poland — the GTFS dataset is explored on
+its own to document data structure and quality (see notebook for details).
+
+Notebook: `CEE/Poland_MVD.ipynb`
