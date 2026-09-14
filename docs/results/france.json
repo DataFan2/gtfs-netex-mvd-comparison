@@ -1,0 +1,47 @@
+[
+  {
+    "country": "France",
+    "code": "FR",
+    "method": {
+      "stops": "coordinates, 50 m",
+      "routes": "shared identifier",
+      "calendars": "day-by-day activity pattern"
+    },
+    "release": {
+      "gtfs": {
+        "file": "Export_OpenData_SNCF_GTFS_NewTripId.zip",
+        "published": "Mon, 14 Sep 2026 18:32:30 GMT"
+      },
+      "netex": {
+        "file": "export-opendata-sncf-netex.zip",
+        "published": "Mon, 14 Sep 2026 18:11:34 GMT"
+      }
+    },
+    "stops": {
+      "matched": 3385,
+      "gtfs": 3385,
+      "netex": 3385,
+      "gtfs_pct": 100.0,
+      "netex_pct": 99.91,
+      "netex_matched_distinct": 3382
+    },
+    "routes": {
+      "matched": 688,
+      "gtfs": 688,
+      "netex": 688,
+      "gtfs_pct": 100.0,
+      "netex_pct": 100.0
+    },
+    "calendars": {
+      "matched": 5857,
+      "gtfs": 5875,
+      "netex": 5989,
+      "gtfs_pct": 99.69,
+      "netex_pct": 97.8,
+      "window_days": 151,
+      "window_from": "2026-09-14",
+      "window_to": "2027-02-11"
+    },
+    "checked": "2026-09-14T21:34:33Z"
+  }
+]

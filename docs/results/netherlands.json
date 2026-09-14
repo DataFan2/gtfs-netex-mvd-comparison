@@ -1,0 +1,37 @@
+[
+  {
+    "country": "Netherlands",
+    "code": "NL",
+    "method": {
+      "stops": "coordinates, 50 m",
+      "routes": "not comparable"
+    },
+    "release": {
+      "gtfs": {
+        "file": "gtfs-nl.zip",
+        "published": "Mon, 14 Sep 2026 07:05:52 GMT"
+      },
+      "netex": {
+        "file": "NeTEx_DOVA_epiap_2026-09-14.xml.gz",
+        "valid_from": "20260914"
+      }
+    },
+    "stops": {
+      "matched": 15861,
+      "gtfs": 16886,
+      "netex": 25538,
+      "gtfs_pct": 93.93,
+      "netex_pct": 57.72,
+      "netex_matched_distinct": 14741
+    },
+    "routes": {
+      "available": false,
+      "note": "the Dutch NeTEx feed contains no Line elements, so routes cannot be compared"
+    },
+    "calendars": {
+      "available": false,
+      "note": "calendar extraction for this feed is not implemented yet"
+    },
+    "checked": "2026-09-14T21:36:34Z"
+  }
+]

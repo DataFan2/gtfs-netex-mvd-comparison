@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MVD Monitor</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --deep:#16306F; --navy:#1F3F8F; --mid:#5A6A93; --light:#8E97B2;
+  --line:#DCE2EE; --surface:#FFFFFF; --ground:#F6F8FC; --sunk:#EDF1F7;
+  --good:#1F7A54; --good-bg:#E2F0E9;
+  --gtfs:#80AADD; --netex:#D4744F;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--deep);
+  font:400 16px/1.55 Barlow,system-ui,sans-serif;padding:0 20px;padding-block:0 64px}
+.wrap{max-width:1000px;margin:0 auto}
+header{padding-block:44px 22px;border-bottom:1px solid var(--line)}
+.eyebrow{font-size:12.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--light)}
+h1{font-size:clamp(30px,4.4vw,42px);line-height:1.08;margin:8px 0 0;font-weight:700;letter-spacing:-.01em}
+.lede{color:var(--mid);margin-top:12px;max-width:64ch}
+.status{display:flex;flex-wrap:wrap;gap:10px 26px;margin-top:20px;font-size:14px;color:var(--mid)}
+.status b{color:var(--deep);font-weight:600}
+.pill{display:inline-flex;align-items:center;gap:7px;background:var(--good-bg);color:var(--good);
+  font-weight:600;font-size:13px;padding:4px 11px;border-radius:100px}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--good);display:inline-block}
+
+.country{background:var(--surface);border:1px solid var(--line);border-radius:5px;
+  padding:22px 24px;margin-top:22px}
+.chead{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 16px;
+  border-bottom:1px solid var(--line);padding-bottom:14px;margin-bottom:18px}
+.chead h2{font-size:24px;font-weight:700;margin:0;letter-spacing:-.01em}
+.chead .rel{font-size:13.5px;color:var(--light);font-family:"IBM Plex Mono",monospace}
+.dims{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px}
+.dim h3{font-size:12.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--light);margin:0 0 12px}
+.pair{display:flex;gap:26px;margin-bottom:12px}
+.n{font-family:"IBM Plex Mono",monospace;font-size:30px;font-weight:500;line-height:1;
+  letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.n small{display:block;font-family:Barlow,sans-serif;font-size:11.5px;font-weight:600;
+  letter-spacing:.09em;text-transform:uppercase;color:var(--light);margin-top:7px}
+.bar{height:6px;border-radius:3px;background:var(--sunk);overflow:hidden;margin-bottom:6px}
+.bar i{display:block;height:100%}
+.bar.g i{background:var(--gtfs)}
+.bar.n i{background:var(--netex)}
+.counts{font-family:"IBM Plex Mono",monospace;font-size:12.5px;color:var(--mid);
+  font-variant-numeric:tabular-nums;border-top:1px solid var(--line);padding-top:10px;margin-top:10px}
+.how{font-size:13px;color:var(--light);margin-top:6px}
+
+details{margin-top:16px}
+summary{cursor:pointer;font-size:13.5px;color:var(--navy);font-weight:600}
+table{width:100%;border-collapse:collapse;margin-top:12px;font-size:13.5px}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line)}
+th{font-size:11.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--light)}
+td.num{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;text-align:right}
+
+section.notes{margin-top:34px}
+h3.sec{font-size:18px;font-weight:600;margin:0 0 8px}
+p{color:var(--mid);max-width:68ch;margin:0 0 12px}
+code{font-family:"IBM Plex Mono",monospace;font-size:13px;background:var(--sunk);
+  padding:2px 6px;border-radius:3px;color:var(--deep)}
+.err{background:#FCEEEC;border:1px solid #E0B4AC;color:#8E3626;padding:14px 16px;border-radius:4px}
+footer{margin-top:40px;padding-top:18px;border-top:1px solid var(--line);font-size:13.5px;color:var(--light)}
+a{color:var(--navy)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="eyebrow">GTFS &harr; NeTEx comparability</div>
+  <h1>MVD Monitor</h1>
+  <p class="lede">Each run resolves the newest published GTFS and NeTEx release for every
+  country below, downloads both, and recomputes stop and route comparability using the
+  Minimum Viable Denominator method. Two rates are reported per dimension, one per side.</p>
+  <div class="status" id="status"></div>
+</header>
+
+<div id="body"></div>
+
+<footer>
+  Method: Miclaus &amp; Sohi, <em>It is Not the Standard, It is the Feed</em>, Sem4Tra 2026.
+  Source and results: <a href="https://github.com/DataFan2/gtfs-netex-mvd-comparison">github.com/DataFan2/gtfs-netex-mvd-comparison</a>
+</footer>
+</div>
+
+<script>
+const fmt = n => n.toLocaleString("en-GB");
+const dt  = s => new Date(s).toLocaleString("en-GB",
+  {day:"numeric",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit",timeZone:"UTC"}) + " UTC";
+
+function releaseLabel(r){
+  if (r && r.valid_from) return r.valid_from.slice(0,4)+"-"+r.valid_from.slice(4,6)+"-"+r.valid_from.slice(6,8);
+  if (r && r.published)  return new Date(r.published).toLocaleDateString("en-GB",
+    {day:"numeric",month:"short",year:"numeric",timeZone:"UTC"});
+  return "unknown";
+}
+
+function dim(title, d, how){
+  if (!d || d.available === false){
+    const note = (d && d.note) || "not available";
+    return `<div class="dim">
+      <h3>${title}</h3>
+      <div class="pair"><div class="n" style="color:var(--light)">&mdash;<small>not comparable</small></div></div>
+      <div class="how">${note}</div>
+    </div>`;
+  }
+  return `<div class="dim">
+    <h3>${title}</h3>
+    <div class="pair">
+      <div class="n">${d.gtfs_pct.toFixed(2)}%<small>GTFS side</small></div>
+      <div class="n">${d.netex_pct.toFixed(2)}%<small>NeTEx side</small></div>
+    </div>
+    <div class="bar g"><i style="width:${Math.max(d.gtfs_pct,0.6)}%"></i></div>
+    <div class="bar n"><i style="width:${Math.max(d.netex_pct,0.6)}%"></i></div>
+    <div class="counts">${fmt(d.matched)} matched &nbsp;&middot;&nbsp; ${fmt(d.gtfs)} GTFS &nbsp;&middot;&nbsp; ${fmt(d.netex)} NeTEx</div>
+    <div class="how">matched on ${how}</div>
+  </div>`;
+}
+
+function countryCard(history){
+  const last = history[history.length-1];
+  const cell = d => (!d || d.available === false)
+    ? "&mdash;"
+    : d.gtfs_pct.toFixed(2)+"% / "+d.netex_pct.toFixed(2)+"%";
+  let rows = "";
+  [...history].reverse().forEach(r => {
+    rows += `<tr><td>${dt(r.checked)}</td><td>${releaseLabel(r.release.gtfs)}</td>
+      <td class="num">${cell(r.stops)}</td>
+      <td class="num">${cell(r.routes)}</td>
+      <td class="num">${cell(r.calendars)}</td></tr>`;
+  });
+
+  return `<div class="country">
+    <div class="chead">
+      <h2>${last.country}</h2>
+      <span class="rel">GTFS ${releaseLabel(last.release.gtfs)} &nbsp;&middot;&nbsp; NeTEx ${releaseLabel(last.release.netex)}</span>
+    </div>
+    <div class="dims">
+      ${dim("Stops and stations", last.stops, last.method.stops)}
+      ${dim("Routes and lines",  last.routes, last.method.routes)}
+      ${dim("Service calendars", last.calendars, last.method.calendars || "day-by-day activity pattern")}
+    </div>
+    <details><summary>Run history (${history.length})</summary>
+      <table><thead><tr><th>Checked</th><th>Release</th>
+        <th style="text-align:right">Stops</th>
+        <th style="text-align:right">Routes</th>
+        <th style="text-align:right">Calendars</th></tr></thead>
+        <tbody>${rows}</tbody></table>
+    </details>
+  </div>`;
+}
+
+fetch("results/index.json", {cache:"no-store"})
+ .then(r => { if(!r.ok) throw new Error("results/index.json not found ("+r.status+")"); return r.json(); })
+ .then(keys => Promise.all(keys.map(k =>
+     fetch("results/"+k+".json", {cache:"no-store"}).then(r => r.json()))))
+ .then(all => {
+   all.sort((a,b) => a[a.length-1].country.localeCompare(b[b.length-1].country));
+   const newest = all.map(h => h[h.length-1].checked).sort().slice(-1)[0];
+   const runs   = Math.max(...all.map(h => h.length));
+
+   document.getElementById("status").innerHTML =
+     `<span class="pill"><i class="dot"></i>Automated run</span>
+      <span>Last checked <b>${dt(newest)}</b></span>
+      <span>Countries <b>${all.length}</b></span>
+      <span>Runs recorded <b>${runs}</b></span>`;
+
+   let out = all.map(countryCard).join("");
+
+   out += `<section class="notes"><h3 class="sec">What this measures</h3>
+     <p>Stops are matched on a shared identifier where the two feeds carry one, and otherwise
+     on coordinates within a fixed distance. Routes are compared either on a shared identifier
+     or at the level of unique public line labels, because both formats create a separate
+     record for every direction and journey-pattern variant of the same line.</p>
+     <p>Two rates are reported rather than one. A feed can be fully contained in a larger
+     counterpart without the two disagreeing, and the direction of the imbalance is as
+     informative as its size.</p>
+     <p>Only countries whose feeds can be downloaded without registration or an API key can be
+     monitored this way. That constraint, rather than data quality, is what limits the list.</p>
+     </section>`;
+
+   document.getElementById("body").innerHTML = out;
+ })
+ .catch(e => {
+   document.getElementById("body").innerHTML =
+     `<section class="notes"><div class="err"><b>No results yet.</b> ${e.message}<br>
+      Run the workflow once from the Actions tab, or run
+      <code>python scripts/monitor.py</code> locally and commit the output.</div></section>`;
+ });
+</script>
+</body>
+</html>

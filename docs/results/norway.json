@@ -1,0 +1,40 @@
+[
+  {
+    "country": "Norway",
+    "code": "NO",
+    "method": {
+      "stops": "shared identifier (NSR)",
+      "routes": "public line label",
+      "calendars": "day-by-day activity pattern"
+    },
+    "release": {
+      "gtfs": {
+        "file": "rb_norway-aggregated-gtfs.zip",
+        "published": "Mon, 14 Sep 2026 21:02:54 GMT"
+      },
+      "netex": {
+        "file": "rb_norway-aggregated-netex.zip",
+        "published": "Mon, 14 Sep 2026 21:10:09 GMT"
+      }
+    },
+    "stops": {
+      "matched": 51235,
+      "gtfs": 51236,
+      "netex": 58002,
+      "gtfs_pct": 100.0,
+      "netex_pct": 88.33
+    },
+    "routes": {
+      "matched": 2261,
+      "gtfs": 2261,
+      "netex": 2262,
+      "gtfs_pct": 100.0,
+      "netex_pct": 99.96
+    },
+    "calendars": {
+      "available": false,
+      "note": "calendar extraction for this feed is implemented but not yet validated"
+    },
+    "checked": "2026-09-14T21:40:42Z"
+  }
+]
