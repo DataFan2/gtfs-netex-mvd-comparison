@@ -35,5 +35,42 @@
       "note": "calendar extraction for this feed is not implemented yet"
     },
     "checked": "2026-09-14T21:35:02Z"
+  },
+  {
+    "country": "Switzerland",
+    "code": "CH",
+    "method": {
+      "stops": "shared identifier (DiDok station number)",
+      "routes": "public line label"
+    },
+    "release": {
+      "gtfs": {
+        "file": "gtfs_fp2026_20260912.zip",
+        "valid_from": "20260912"
+      },
+      "netex": {
+        "file": "prod_netex_tt_1.10_che_ski_2026_oev-schweiz__1_1_202609090709.zip",
+        "valid_from": "20260909"
+      }
+    },
+    "stops": {
+      "matched": 35492,
+      "gtfs": 35527,
+      "netex": 35594,
+      "gtfs_pct": 99.9,
+      "netex_pct": 99.71
+    },
+    "routes": {
+      "matched": 1852,
+      "gtfs": 1854,
+      "netex": 1852,
+      "gtfs_pct": 99.89,
+      "netex_pct": 100.0
+    },
+    "calendars": {
+      "available": false,
+      "note": "calendar extraction for this feed is not implemented yet"
+    },
+    "checked": "2026-09-14T21:54:44Z"
   }
 ]
