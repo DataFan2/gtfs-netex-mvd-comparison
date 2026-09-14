@@ -1,0 +1,38 @@
+name: MVD monitor
+
+on:
+  schedule:
+    - cron: "0 4 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements-monitor.txt
+
+      - name: Fetch feeds and compute comparability
+        run: python scripts/monitor.py
+
+      - name: Commit results
+        run: |
+          git config user.name  "mvd-monitor"
+          git config user.email "actions@github.com"
+          git add docs/results
+          if git diff --staged --quiet; then
+            echo "no change"
+          else
+            git commit -m "monitor: $(date -u +%Y-%m-%d)"
+            git push
+          fi
