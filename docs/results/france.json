@@ -2,6 +2,15 @@
   {
     "country": "France",
     "code": "FR",
+    "source": {
+      "portal": "transport.data.gouv.fr",
+      "publisher": "SNCF Voyageurs, via the French National Access Point",
+      "page": "https://transport.data.gouv.fr/datasets/horaires-sncf",
+      "licence": "ODbL",
+      "access": "open download, no registration",
+      "gtfs_url": "https://eu.ftp.opendatasoft.com/sncf/plandata/Export_OpenData_SNCF_GTFS_NewTripId.zip",
+      "netex_url": "https://eu.ftp.opendatasoft.com/sncf/plandata/export-opendata-sncf-netex.zip"
+    },
     "method": {
       "stops": "coordinates, 50 m",
       "routes": "shared identifier",
@@ -23,59 +32,48 @@
       "netex": 3385,
       "gtfs_pct": 100.0,
       "netex_pct": 99.91,
-      "netex_matched_distinct": 3382
-    },
-    "routes": {
-      "matched": 688,
-      "gtfs": 688,
-      "netex": 688,
-      "gtfs_pct": 100.0,
-      "netex_pct": 100.0
-    },
-    "calendars": {
-      "matched": 5857,
-      "gtfs": 5875,
-      "netex": 5989,
-      "gtfs_pct": 99.69,
-      "netex_pct": 97.8,
-      "window_days": 151,
-      "window_from": "2026-09-14",
-      "window_to": "2027-02-11"
-    },
-    "checked": "2026-09-14T21:34:33Z"
-  },
-  {
-    "country": "France",
-    "code": "FR",
-    "method": {
-      "stops": "coordinates, 50 m",
-      "routes": "shared identifier",
-      "calendars": "day-by-day activity pattern"
-    },
-    "release": {
-      "gtfs": {
-        "file": "Export_OpenData_SNCF_GTFS_NewTripId.zip",
-        "published": "Mon, 14 Sep 2026 18:32:30 GMT"
+      "only": {
+        "gtfs": 0,
+        "netex": 3
       },
-      "netex": {
-        "file": "export-opendata-sncf-netex.zip",
-        "published": "Mon, 14 Sep 2026 18:11:34 GMT"
+      "samples": {
+        "gtfs": [],
+        "netex": [
+          {
+            "id": "FR::LMO:85f57e50-cb0a-11e8-8bfa-f784c1c7c611:",
+            "name": "Lutterbach Tram-train",
+            "lat": 47.758214,
+            "lon": 7.276994
+          },
+          {
+            "id": "FR::LMO:a3764f70-0c8b-11ec-87a4-41ed5fc90f53:",
+            "name": "Ancenis Bis",
+            "lat": 47.369334,
+            "lon": -1.177763
+          },
+          {
+            "id": "FR::LMU:7e4c4800-cb0a-11e8-8bfa-f784c1c7c611:",
+            "name": "Paris Montparnasse Vaugirard",
+            "lat": 48.841172,
+            "lon": 2.320514
+          }
+        ]
       }
     },
-    "stops": {
-      "matched": 3385,
-      "gtfs": 3385,
-      "netex": 3385,
-      "gtfs_pct": 100.0,
-      "netex_pct": 99.91,
-      "netex_matched_distinct": 3382
-    },
     "routes": {
       "matched": 688,
       "gtfs": 688,
       "netex": 688,
       "gtfs_pct": 100.0,
-      "netex_pct": 100.0
+      "netex_pct": 100.0,
+      "only": {
+        "gtfs": 0,
+        "netex": 0
+      },
+      "samples": {
+        "gtfs": [],
+        "netex": []
+      }
     },
     "calendars": {
       "matched": 5857,
@@ -87,6 +85,6 @@
       "window_from": "2026-09-14",
       "window_to": "2027-02-11"
     },
-    "checked": "2026-09-14T21:54:12Z"
+    "checked": "2026-09-14T22:34:15Z"
   }
 ]

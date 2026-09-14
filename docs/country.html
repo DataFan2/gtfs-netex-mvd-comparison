@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MVD Monitor</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --deep:#16306F; --navy:#1F3F8F; --mid:#5A6A93; --light:#8E97B2;
+  --line:#DCE2EE; --surface:#FFFFFF; --ground:#F6F8FC; --sunk:#EDF1F7;
+  --gtfs:#80AADD; --gtfs-fill:#B6CEEB; --netex:#D4744F; --netex-fill:#D5B2AA;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--deep);
+  font:400 16px/1.55 Barlow,system-ui,sans-serif;padding:0 20px;padding-block:0 64px}
+.wrap{max-width:1000px;margin:0 auto}
+a{color:var(--navy)}
+.back{display:inline-block;margin-top:28px;font-size:14px;font-weight:600}
+header{padding-block:14px 22px;border-bottom:1px solid var(--line)}
+h1{font-size:clamp(28px,4vw,40px);line-height:1.08;margin:6px 0 0;font-weight:700;letter-spacing:-.01em}
+.sub{color:var(--mid);margin-top:10px;font-size:14.5px;font-family:"IBM Plex Mono",monospace}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:5px;
+  padding:22px 24px;margin-top:22px}
+.card h2{font-size:13px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--light);margin:0 0 16px}
+
+table.src{width:100%;border-collapse:collapse;font-size:14.5px}
+table.src th{text-align:left;font-weight:600;color:var(--light);width:150px;
+  padding:7px 12px 7px 0;vertical-align:top;font-size:13px;letter-spacing:.04em;text-transform:uppercase}
+table.src td{padding:7px 0;vertical-align:top;word-break:break-word}
+
+.dimrow{display:grid;grid-template-columns:320px 1fr;gap:26px;align-items:start}
+@media(max-width:760px){.dimrow{grid-template-columns:1fr}}
+.venn{width:320px;height:210px;display:block}
+.venn .hit{cursor:pointer}
+.chips{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.chip{font-family:Barlow,sans-serif;font-size:12px;font-weight:600;line-height:1;white-space:nowrap;border:1px solid var(--line);background:var(--surface);
+  color:var(--mid);border-radius:100px;padding:6px 11px;cursor:pointer}
+.chip b{font-family:"IBM Plex Mono",monospace;font-weight:500;color:var(--deep);margin-left:4px}
+.chip.c-g:hover,.chip.c-g.on{border-color:var(--gtfs);background:var(--gtfs-fill)}
+.chip.c-n:hover,.chip.c-n.on{border-color:var(--netex);background:var(--netex-fill)}
+.chip.c-b:hover,.chip.c-b.on{border-color:#8E7F9E;background:#E4DFE9}
+.legend{font-size:12.5px;color:var(--light);margin-top:10px}
+.legend b{color:var(--mid);font-weight:600}
+.swatch{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;
+  vertical-align:-1px;border:1.5px solid}
+.sw-g{background:var(--gtfs-fill);border-color:var(--gtfs)}
+.sw-n{background:var(--netex-fill);border-color:var(--netex)}
+
+.pair{display:flex;gap:26px;margin-bottom:10px}
+.n{font-family:"IBM Plex Mono",monospace;font-size:28px;font-weight:500;line-height:1;
+  letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.n small{display:block;font-family:Barlow,sans-serif;font-size:11.5px;font-weight:600;
+  letter-spacing:.09em;text-transform:uppercase;color:var(--light);margin-top:7px}
+.how{font-size:13.5px;color:var(--light);margin:10px 0 14px}
+
+.panel{background:var(--sunk);border-radius:4px;padding:14px 16px;min-height:132px}
+.panel h4{margin:0 0 4px;font-size:14.5px;font-weight:700}
+.panel .cnt{font-family:"IBM Plex Mono",monospace;font-size:13px;color:var(--mid);margin-bottom:10px}
+.panel ol{margin:0;padding-left:20px;font-family:"IBM Plex Mono",monospace;font-size:12.5px;
+  color:var(--deep);line-height:1.75}
+.panel .nm{color:var(--mid)}
+.panel .hintline{color:var(--light);font-size:13.5px}
+
+.notcomp{color:var(--light);font-size:14.5px}
+.news{white-space:pre-wrap}
+footer{margin-top:40px;padding-top:18px;border-top:1px solid var(--line);font-size:13.5px;color:var(--light)}
+.err{background:#FCEEEC;border:1px solid #E0B4AC;color:#8E3626;padding:14px 16px;border-radius:4px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<a class="back" href="./">&larr; All countries</a>
+<div id="page"></div>
+<footer>
+  Method: Miclaus &amp; Sohi, <em>It is Not the Standard, It is the Feed</em>, Sem4Tra 2026.
+  <a href="https://github.com/DataFan2/gtfs-netex-mvd-comparison">Source and results on GitHub</a>
+</footer>
+</div>
+
+<script>
+const key = new URLSearchParams(location.search).get("c") || "luxembourg";
+const fmt = n => n.toLocaleString("en-GB");
+const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c =>
+  ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]));
+const dt = s => new Date(s).toLocaleString("en-GB",
+  {day:"numeric",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit",timeZone:"UTC"}) + " UTC";
+
+function releaseLabel(r){
+  if (r && r.valid_from) return r.valid_from.slice(0,4)+"-"+r.valid_from.slice(4,6)+"-"+r.valid_from.slice(6,8);
+  if (r && r.published)  return new Date(r.published).toLocaleDateString("en-GB",
+    {day:"numeric",month:"short",year:"numeric",timeZone:"UTC"});
+  return "unknown";
+}
+
+/* ---------- proportional Venn -------------------------------------- */
+
+function lensArea(r1, r2, d){
+  if (d >= r1 + r2) return 0;
+  if (d <= Math.abs(r1 - r2)) return Math.PI * Math.min(r1, r2) ** 2;
+  const a = r1*r1*Math.acos((d*d + r1*r1 - r2*r2)/(2*d*r1))
+          + r2*r2*Math.acos((d*d + r2*r2 - r1*r1)/(2*d*r2))
+          - 0.5*Math.sqrt((-d+r1+r2)*(d+r1-r2)*(d-r1+r2)*(d+r1+r2));
+  return a;
+}
+
+function separation(r1, r2, target){
+  // binary search the centre distance that gives the wanted overlap area
+  let lo = Math.abs(r1 - r2), hi = r1 + r2;
+  for (let i = 0; i < 60; i++){
+    const mid = (lo + hi) / 2;
+    if (lensArea(r1, r2, mid) > target) lo = mid; else hi = mid;
+  }
+  return (lo + hi) / 2;
+}
+
+function lensPath(x1, y, r1, x2, r2, d){
+  // the two intersection points of the circles, then one arc from each
+  const a = (d*d + r1*r1 - r2*r2) / (2*d);
+  const h = Math.sqrt(Math.max(r1*r1 - a*a, 0));
+  const cx = x1 + a, ys = [y - h, y + h];
+  return `M ${cx} ${ys[0]} A ${r1} ${r1} 0 0 1 ${cx} ${ys[1]} A ${r2} ${r2} 0 0 1 ${cx} ${ys[0]} Z`;
+}
+
+function venn(d, id){
+  const W = 320, H = 210, cy = 100;
+  const gOnly = d.only ? d.only.gtfs : d.gtfs - d.matched;
+  const nOnly = d.only ? d.only.netex : d.netex - d.matched;
+  const total = Math.max(d.gtfs, d.netex, 1);
+
+  // radii proportional to set size by area, scaled to fit the box
+  const k = 74 / Math.sqrt(total);
+  const r1 = Math.max(k * Math.sqrt(d.gtfs || 1), 9);
+  const r2 = Math.max(k * Math.sqrt(d.netex || 1), 9);
+  const target = Math.PI * k * k * d.matched;
+  const sep = separation(r1, r2, target);
+
+  const span = r1 + sep + r2;
+  const x1 = (W - span) / 2 + r1, x2 = x1 + sep;
+
+  const both = sep < r1 + r2 && d.matched > 0;
+  const lens = both ? lensPath(x1, cy, r1, x2, r2, sep) : null;
+
+  const data = JSON.stringify({
+    g:{t:"Only in GTFS", c:gOnly, s:d.samples ? d.samples.gtfs : []},
+    b:{t:"In both", c:d.matched, s:[]},
+    n:{t:"Only in NeTEx", c:nOnly, s:d.samples ? d.samples.netex : []}
+  }).replace(/"/g, "&quot;");
+
+  return `
+  <svg class="venn" viewBox="0 0 ${W} ${H}" data-regions="${data}" data-id="${id}">
+    <circle cx="${x1}" cy="${cy}" r="${r1}" fill="var(--gtfs-fill)" fill-opacity=".8"
+            stroke="var(--gtfs)" stroke-width="2"/>
+    <circle cx="${x2}" cy="${cy}" r="${r2}" fill="var(--netex-fill)" fill-opacity=".85"
+            stroke="var(--netex)" stroke-width="2"/>
+    ${lens ? `<path d="${lens}" fill="#8E7F9E" fill-opacity=".35" stroke="none"/>` : ""}
+    <circle class="hit" data-r="g" cx="${x1}" cy="${cy}" r="${r1}" fill="transparent"/>
+    <circle class="hit" data-r="n" cx="${x2}" cy="${cy}" r="${r2}" fill="transparent"/>
+    ${lens ? `<path class="hit" data-r="b" d="${lens}" fill="transparent"/>` : ""}
+    <text x="${x1 - r1}" y="22" font-size="13" font-weight="700" fill="var(--deep)">GTFS</text>
+    <text x="${x2 + r2}" y="22" font-size="13" font-weight="700" fill="var(--deep)"
+          text-anchor="end">NeTEx</text>
+    <text x="${W/2}" y="${H - 12}" font-size="12" fill="var(--light)" text-anchor="middle">
+      hover a region
+    </text>
+  </svg>`;
+}
+
+function renderRegion(panel, region, how){
+  if (!region){
+    panel.innerHTML = `<div class="hintline">Hover a region of the diagram to see what is in it.</div>`;
+    return;
+  }
+  let list = "";
+  if (region.s && region.s.length){
+    list = "<ol>" + region.s.map(x => {
+      if (x.label !== undefined && x.id === undefined)
+        return `<li>${esc(x.label)}</li>`;
+      if (x.label !== undefined)
+        return `<li>${esc(x.label)} <span class="nm">${esc(x.name)}</span></li>`;
+      const near = x.nearest_m !== undefined ? ` <span class="nm">nearest ${x.nearest_m} m</span>` : "";
+      return `<li>${esc(x.id)} <span class="nm">${esc(x.name)}</span>${near}</li>`;
+    }).join("") + "</ol>";
+    if (region.c > region.s.length)
+      list += `<div class="hintline" style="margin-top:8px">first ${region.s.length} of ${fmt(region.c)}, sorted by identifier</div>`;
+  } else if (region.c === 0){
+    list = `<div class="hintline">Nothing in this region.</div>`;
+  } else {
+    list = `<div class="hintline">${fmt(region.c)} records matched on ${esc(how)}.</div>`;
+  }
+  panel.innerHTML = `<h4>${esc(region.t)}</h4><div class="cnt">${fmt(region.c)} records</div>${list}`;
+}
+
+function dimension(title, d, how){
+  if (!d || d.available === false){
+    return `<div class="card"><h2>${title}</h2>
+      <div class="notcomp">Not comparable. ${esc((d && d.note) || "not available")}</div></div>`;
+  }
+  const id = title.replace(/\W/g, "");
+  return `<div class="card"><h2>${title}</h2>
+    <div class="dimrow">
+      <div>
+        ${venn(d, id)}
+        <div class="chips" data-for="${id}">
+          <button class="chip c-g" data-r="g">only GTFS <b>${fmt(d.only ? d.only.gtfs : d.gtfs - d.matched)}</b></button>
+          <button class="chip c-b" data-r="b">both <b>${fmt(d.matched)}</b></button>
+          <button class="chip c-n" data-r="n">only NeTEx <b>${fmt(d.only ? d.only.netex : d.netex - d.matched)}</b></button>
+        </div>
+        <div class="legend">
+          <span class="swatch sw-g"></span><b>${fmt(d.gtfs)}</b> GTFS total &nbsp;
+          <span class="swatch sw-n"></span><b>${fmt(d.netex)}</b> NeTEx total
+        </div>
+      </div>
+      <div>
+        <div class="pair">
+          <div class="n">${d.gtfs_pct.toFixed(2)}%<small>GTFS side</small></div>
+          <div class="n">${d.netex_pct.toFixed(2)}%<small>NeTEx side</small></div>
+        </div>
+        <div class="how">matched on ${esc(how)}${d.window_days ? `, over a shared window of ${d.window_days} days` : ""}</div>
+        <div class="panel" id="panel-${id}"></div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function wireVenns(){
+  document.querySelectorAll("svg.venn").forEach(svg => {
+    const regions = JSON.parse(svg.getAttribute("data-regions").replace(/&quot;/g, '"'));
+    const panel = document.getElementById("panel-" + svg.getAttribute("data-id"));
+    renderRegion(panel, null);
+    const id = svg.getAttribute("data-id");
+    const chips = document.querySelector(`.chips[data-for="${id}"]`);
+    const select = r => {
+      renderRegion(panel, regions[r], "");
+      if (chips) chips.querySelectorAll(".chip").forEach(c =>
+        c.classList.toggle("on", c.getAttribute("data-r") === r));
+    };
+    svg.querySelectorAll(".hit").forEach(hit => {
+      const r = hit.getAttribute("data-r");
+      hit.addEventListener("mouseenter", () => select(r));
+      hit.addEventListener("click", () => select(r));
+    });
+    if (chips) chips.querySelectorAll(".chip").forEach(c => {
+      const r = c.getAttribute("data-r");
+      c.addEventListener("mouseenter", () => select(r));
+      c.addEventListener("click", () => select(r));
+    });
+  });
+}
+
+fetch(`results/${key}.json`, {cache:"no-store"})
+  .then(r => { if(!r.ok) throw new Error(`results/${key}.json not found`); return r.json(); })
+  .then(history => {
+    const last = history[history.length - 1];
+    const src = last.source || {};
+    document.title = `${last.country} — MVD Monitor`;
+
+    let out = `<header>
+      <h1>${esc(last.country)}</h1>
+      <div class="sub">GTFS ${releaseLabel(last.release.gtfs)} &middot;
+        NeTEx ${releaseLabel(last.release.netex)} &middot; checked ${dt(last.checked)}</div>
+    </header>`;
+
+    out += `<div class="card"><h2>Where the data comes from</h2>
+      <table class="src">
+        <tr><th>Publisher</th><td>${esc(src.publisher || "")}</td></tr>
+        <tr><th>Portal</th><td>${src.page ? `<a href="${esc(src.page)}">${esc(src.portal || src.page)}</a>` : esc(src.portal || "")}</td></tr>
+        <tr><th>Licence</th><td>${esc(src.licence || "")}</td></tr>
+        <tr><th>Access</th><td>${esc(src.access || "")}</td></tr>
+        <tr><th>GTFS file</th><td>${src.gtfs_url ? `<a href="${esc(src.gtfs_url)}">${esc(last.release.gtfs.file)}</a>` : esc(last.release.gtfs.file)}</td></tr>
+        <tr><th>NeTEx file</th><td>${src.netex_url ? `<a href="${esc(src.netex_url)}">${esc(last.release.netex.file)}</a>` : esc(last.release.netex.file)}</td></tr>
+      </table></div>`;
+
+    out += dimension("Stops and stations", last.stops, last.method.stops);
+    out += dimension("Routes and lines", last.routes, last.method.routes);
+    out += dimension("Service calendars", last.calendars, last.method.calendars);
+
+    document.getElementById("page").innerHTML = out;
+    wireVenns();
+
+    // optional editorial notes, docs/notes.json
+    fetch("notes.json", {cache:"no-store"}).then(r => r.ok ? r.json() : null).then(notes => {
+      const entry = notes && notes[key];
+      if (!entry) return;
+      const div = document.createElement("div");
+      div.className = "card";
+      div.innerHTML = `<h2>What we noticed</h2><div class="news">${esc(entry)}</div>`;
+      document.getElementById("page").appendChild(div);
+    }).catch(() => {});
+  })
+  .catch(e => {
+    document.getElementById("page").innerHTML =
+      `<header><h1>Not found</h1></header><div class="card"><div class="err">${esc(e.message)}</div></div>`;
+  });
+</script>
+</body>
+</html>

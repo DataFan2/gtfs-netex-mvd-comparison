@@ -1,0 +1,3 @@
+{
+  "switzerland": "Switzerland moved its GTFS stop_id to the Swiss Location ID (SLOID) in production on 4 June 2026, two months after the snapshot used in the paper. The national DiDok station number is still published, in its own column, and that is what this monitor joins on. A comparison built on the old stop_id would return about 27 per cent today. Nothing about the standard changed and both feeds remain correct. One field moved."
+}

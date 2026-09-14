@@ -207,6 +207,53 @@ def match_by_distance(gtfs_points, netex_points, threshold_m):
     return matched, len(used)
 
 
+def compare_by_distance(gtfs_records, netex_records, threshold_m):
+    """
+    Nearest-neighbour comparison within a distance threshold, many-to-one.
+
+    gtfs_records : list of {id, name, lat, lon}
+    netex_records: {id: {id, name, lat, lon}}
+
+    Returns the same shape as set_compare, so the dashboard treats both the
+    identifier route and the coordinate route identically.
+    """
+    CELL = 0.01
+    grid = {}
+    for rec in netex_records.values():
+        if rec["lat"] is None:
+            continue
+        grid.setdefault((int(rec["lat"] / CELL), int(rec["lon"] / CELL)), []).append(rec)
+
+    matched, used, unmatched_gtfs = 0, set(), []
+    for g in gtfs_records:
+        best, bestd = None, float("inf")
+        ci, cj = int(g["lat"] / CELL), int(g["lon"] / CELL)
+        for i in (ci - 1, ci, ci + 1):
+            for j in (cj - 1, cj, cj + 1):
+                for n in grid.get((i, j), ()):
+                    d = haversine(g["lat"], g["lon"], n["lat"], n["lon"])
+                    if d < bestd:
+                        best, bestd = n, d
+        if best is not None and bestd <= threshold_m:
+            matched += 1
+            used.add(best["id"])
+        else:
+            g = dict(g)
+            if best is not None:
+                g["nearest_m"] = round(bestd)
+            unmatched_gtfs.append(g)
+
+    unmatched_netex = [r for k, r in sorted(netex_records.items()) if k not in used]
+    rec = rates(matched, len(gtfs_records), len(netex_records))
+    rec["netex_pct"] = round(len(used) / len(netex_records) * 100, 2) if netex_records else 0.0
+    rec["only"] = {"gtfs": len(unmatched_gtfs), "netex": len(unmatched_netex)}
+    rec["samples"] = {
+        "gtfs": sorted(unmatched_gtfs, key=lambda r: r["id"])[:SAMPLE_N],
+        "netex": unmatched_netex[:SAMPLE_N],
+    }
+    return rec
+
+
 def rates(matched, gtfs_total, netex_total):
     return {
         "matched": matched,
@@ -216,6 +263,72 @@ def rates(matched, gtfs_total, netex_total):
         "netex_pct": round(matched / netex_total * 100, 2) if netex_total else 0.0,
     }
 
+
+
+
+# ------------------------------------------------------------------- samples
+#
+# Every dimension reports a small, stable sample of what did not match, so the
+# dashboard can show real records rather than only a percentage. The sample is
+# sorted by key and truncated, which makes it deterministic: if an entry changes
+# from one week to the next, the feed itself changed.
+
+SAMPLE_N = 10
+
+RE_SP_BLOCK_NAME = re.compile(
+    rb'<StopPlace\b[^>]*\bid="([^"]+)"(.*?)</StopPlace>', re.S)
+RE_ANY_NAME = re.compile(rb"<Name[^>]*>([^<]*)</Name>")
+
+
+def _clean(text):
+    return re.sub(r"\s+", " ", text).strip()
+
+
+def set_compare(gtfs_items, netex_items):
+    """
+    Compare two keyed collections and report rates plus samples.
+
+    gtfs_items / netex_items: {key: record dict}. The key decides the match,
+    the record is what the dashboard displays.
+    """
+    g, n = set(gtfs_items), set(netex_items)
+    matched = g & n
+    rec = rates(len(matched), len(g), len(n))
+    gtfs_only, netex_only = sorted(g - n), sorted(n - g)
+    rec["only"] = {"gtfs": len(gtfs_only), "netex": len(netex_only)}
+    rec["samples"] = {
+        "gtfs": [gtfs_items[k] for k in gtfs_only[:SAMPLE_N]],
+        "netex": [netex_items[k] for k in netex_only[:SAMPLE_N]],
+    }
+    return rec
+
+
+def label_map(values):
+    """{normalised label: {'label': original}} for route-label comparisons."""
+    out = {}
+    for v in values:
+        key = re.sub(r"\s+", "", str(v).strip().upper())
+        if key:
+            out.setdefault(key, {"label": _clean(str(v))})
+    return out
+
+
+def netex_stopplaces(buffers):
+    """{id: {id, name, lat, lon}} for every StopPlace found in the given buffers."""
+    out = {}
+    for buf in buffers:
+        for m in RE_SP_BLOCK_NAME.finditer(buf):
+            body = m.group(2)
+            name = RE_ANY_NAME.search(body)
+            lo, la = RE_LON.search(body), RE_LAT.search(body)
+            sid = m.group(1).decode()
+            out[sid] = {
+                "id": sid,
+                "name": _clean(name.group(1).decode("utf-8", "replace")) if name else "",
+                "lat": float(la.group(1)) if la else None,
+                "lon": float(lo.group(1)) if lo else None,
+            }
+    return out
 
 
 # --------------------------------------------------------------------- calendars
@@ -465,6 +578,13 @@ LU_SETS = {
     "gtfs": "horaires-et-arrets-des-transport-publics-gtfs",
     "netex": "horaires-et-arrets-des-transport-publics-netex",
 }
+LU_SOURCE = {
+    "portal": "data.public.lu",
+    "publisher": "Ministere de la Mobilite et des Travaux publics",
+    "page": "https://data.public.lu/en/datasets/horaires-et-arrets-des-transport-publics-gtfs/",
+    "licence": "CC BY 4.0",
+    "access": "open download, no registration",
+}
 
 
 def lu_newest(slug):
@@ -484,26 +604,35 @@ def lu_newest(slug):
     return {"valid_from": best[0], "file": best[1], "url": best[2]}
 
 
+def lu_core(value):
+    """Luxembourg station number: strip padding, keep the digits."""
+    v = (value or "").strip().lstrip("0")
+    return v if v.isdigit() else None
+
+
 def run_luxembourg():
     g, n = lu_newest(LU_SETS["gtfs"]), lu_newest(LU_SETS["netex"])
     gtfs_bytes, netex_bytes = fetch(g["url"]), fetch(n["url"])
 
-    def core(v):
-        v = (v or "").strip().lstrip("0")
-        return v if v.isdigit() else None
+    gtfs_stops = {}
+    for r in gtfs_table(gtfs_bytes, "stops.txt"):
+        key = lu_core(r["stop_id"])
+        if key:
+            gtfs_stops[key] = {"id": r["stop_id"], "name": _clean(r["stop_name"]),
+                               "lat": float(r["stop_lat"]), "lon": float(r["stop_lon"])}
 
-    gtfs_stop_ids = {c for c in (core(r["stop_id"])
-                                 for r in gtfs_table(gtfs_bytes, "stops.txt")) if c}
-    sp, _, line_codes = scan_stopplaces_and_lines(netex_bytes, want_coords=False)
-    nx_stop_ids = set()
-    for sid, _, _ in sp:
+    netex_places = netex_stopplaces(netex_xml_buffers(netex_bytes))
+    netex_stops = {}
+    for sid, rec in netex_places.items():
         m = re.search(r":(\d+)_", sid)
         if m:
-            nx_stop_ids.add(m.group(1).lstrip("0"))
+            netex_stops[m.group(1).lstrip("0")] = rec
 
-    gtfs_routes = {r["route_short_name"].strip().upper()
-                   for r in gtfs_table(gtfs_bytes, "routes.txt")
-                   if r["route_short_name"].strip()}
+    gtfs_routes = label_map(r["route_short_name"]
+                            for r in gtfs_table(gtfs_bytes, "routes.txt")
+                            if r["route_short_name"].strip())
+    _, _, line_codes = scan_stopplaces_and_lines(netex_bytes, want_coords=False)
+    netex_routes = label_map(line_codes)
 
     calendars = calendar_rates(
         gtfs_active_dates(gtfs_bytes),
@@ -512,12 +641,13 @@ def run_luxembourg():
     return {
         "country": "Luxembourg",
         "code": "LU",
+        "source": dict(LU_SOURCE, gtfs_url=g["url"], netex_url=n["url"]),
         "method": {"stops": "shared identifier", "routes": "public line label",
                    "calendars": "day-by-day activity pattern"},
         "release": {"gtfs": {"file": g["file"], "valid_from": g["valid_from"]},
                     "netex": {"file": n["file"], "valid_from": n["valid_from"]}},
-        "stops": rates(len(gtfs_stop_ids & nx_stop_ids), len(gtfs_stop_ids), len(nx_stop_ids)),
-        "routes": rates(len(gtfs_routes & line_codes), len(gtfs_routes), len(line_codes)),
+        "stops": set_compare(gtfs_stops, netex_stops),
+        "routes": set_compare(gtfs_routes, netex_routes),
         "calendars": calendars,
     }
 
@@ -529,22 +659,42 @@ def run_luxembourg():
 FR_GTFS = "https://eu.ftp.opendatasoft.com/sncf/plandata/Export_OpenData_SNCF_GTFS_NewTripId.zip"
 FR_NETEX = "https://eu.ftp.opendatasoft.com/sncf/plandata/export-opendata-sncf-netex.zip"
 FR_THRESHOLD_M = 50
+FR_SOURCE = {
+    "portal": "transport.data.gouv.fr",
+    "publisher": "SNCF Voyageurs, via the French National Access Point",
+    "page": "https://transport.data.gouv.fr/datasets/horaires-sncf",
+    "licence": "ODbL",
+    "access": "open download, no registration",
+}
 
 
 def run_france():
     g_head, n_head = head(FR_GTFS), head(FR_NETEX)
     gtfs_bytes, netex_bytes = fetch(FR_GTFS), fetch(FR_NETEX)
 
-    stations = [r for r in gtfs_table(gtfs_bytes, "stops.txt") if r["location_type"] == "1"]
-    gtfs_points = [(float(r["stop_lat"]), float(r["stop_lon"])) for r in stations]
-    gtfs_routes = {r["route_id"] for r in gtfs_table(gtfs_bytes, "routes.txt")}
+    stations = [{"id": r["stop_id"], "name": _clean(r["stop_name"]),
+                 "lat": float(r["stop_lat"]), "lon": float(r["stop_lon"])}
+                for r in gtfs_table(gtfs_bytes, "stops.txt")
+                if r["location_type"] == "1"]
 
-    sp, line_ids, _ = scan_stopplaces_and_lines(netex_bytes, want_coords=True)
-    matched, netex_used = match_by_distance(gtfs_points, sp, FR_THRESHOLD_M)
+    routes_rows = gtfs_table(gtfs_bytes, "routes.txt")
+    gtfs_routes = {r["route_id"]: {"id": r["route_id"],
+                                   "label": _clean(r["route_short_name"]),
+                                   "name": _clean(r["route_long_name"])}
+                   for r in routes_rows}
 
-    stops = rates(matched, len(gtfs_points), len(sp))
-    stops["netex_pct"] = round(netex_used / len(sp) * 100, 2) if sp else 0.0
-    stops["netex_matched_distinct"] = netex_used
+    netex_places = netex_stopplaces(netex_xml_buffers(netex_bytes))
+    netex_routes = {}
+    for buf in netex_xml_buffers(netex_bytes):
+        for m in re.finditer(rb'<Line id="([^"]+)"(.*?)</Line>', buf, re.S):
+            nm = RE_ANY_NAME.search(m.group(2))
+            pc = RE_PUBCODE.search(m.group(2))
+            lid = m.group(1).decode()
+            netex_routes[lid] = {
+                "id": lid,
+                "label": _clean(pc.group(1).decode("utf-8", "replace")) if pc else "",
+                "name": _clean(nm.group(1).decode("utf-8", "replace")) if nm else "",
+            }
 
     calendars = calendar_rates(
         gtfs_active_dates(gtfs_bytes),
@@ -553,19 +703,18 @@ def run_france():
     return {
         "country": "France",
         "code": "FR",
+        "source": dict(FR_SOURCE, gtfs_url=FR_GTFS, netex_url=FR_NETEX),
         "method": {"stops": f"coordinates, {FR_THRESHOLD_M} m", "routes": "shared identifier",
                    "calendars": "day-by-day activity pattern"},
         "release": {"gtfs": {"file": FR_GTFS.rsplit("/", 1)[-1],
                              "published": g_head.get("last-modified")},
                     "netex": {"file": FR_NETEX.rsplit("/", 1)[-1],
                               "published": n_head.get("last-modified")}},
-        "stops": stops,
-        "routes": rates(len(gtfs_routes & line_ids), len(gtfs_routes), len(line_ids)),
+        "stops": compare_by_distance(stations, netex_places, FR_THRESHOLD_M),
+        "routes": set_compare(gtfs_routes, netex_routes),
         "calendars": calendars,
     }
 
-
-# =========================================================================
 
 # =========================================================================
 # Netherlands
@@ -574,13 +723,18 @@ def run_france():
 NL_GTFS = "https://gtfs.ovapi.nl/nl/gtfs-nl.zip"
 NL_NETEX_DIR = "https://data.ndovloket.nl/netex/epiap/"
 NL_THRESHOLD_M = 50
+NL_SOURCE = {
+    "portal": "ovapi.nl and ndovloket.nl",
+    "publisher": "OVapi (GTFS), DOVA via NDOV Loket (NeTEx)",
+    "page": "https://data.ndovloket.nl/netex/epiap/",
+    "licence": "CC0 1.0",
+    "access": "open download, no registration",
+}
 
-RE_SP_NL = re.compile(rb'<StopPlace id="([^"]+)".*?</StopPlace>', re.S)
 RE_GMLPOS = re.compile(rb"<gml:pos>([-\d.]+)\s+([-\d.]+)</gml:pos>")
 
 
 def nl_newest_netex():
-    """The NeTEx directory listing carries one dated file per publication."""
     html = fetch(NL_NETEX_DIR, timeout=60).decode("utf-8", "replace")
     files = re.findall(r'href="(NeTEx_DOVA_epiap_(\d{4}-\d{2}-\d{2})\.xml\.gz)"', html)
     if not files:
@@ -599,8 +753,9 @@ def run_netherlands():
     tmp = ROOT / "_tmp_nl_gtfs.zip"
     try:
         fetch_file(NL_GTFS, tmp)
-        stations = [r for r in gtfs_table(tmp, "stops.txt") if r["location_type"] == "1"]
-        gtfs_points = [(float(r["stop_lat"]), float(r["stop_lon"])) for r in stations]
+        stations = [{"id": r["stop_id"], "name": _clean(r["stop_name"]),
+                     "lat": float(r["stop_lat"]), "lon": float(r["stop_lon"])}
+                    for r in gtfs_table(tmp, "stops.txt") if r["location_type"] == "1"]
     finally:
         tmp.unlink(missing_ok=True)
 
@@ -608,20 +763,18 @@ def run_netherlands():
 
     # Dutch NeTEx stores positions in RD New (EPSG:28992), not in latitude/longitude.
     to_wgs84 = Transformer.from_crs("EPSG:28992", "EPSG:4326", always_xy=True)
-    netex_points, line_ids = [], set()
-    for m in RE_SP_NL.finditer(xml):
-        pos = RE_GMLPOS.search(m.group(0))
+    netex_places = {}
+    for m in RE_SP_BLOCK_NAME.finditer(xml):
+        body = m.group(2)
+        pos = RE_GMLPOS.search(body)
         if not pos:
             continue
         lon, lat = to_wgs84.transform(float(pos.group(1)), float(pos.group(2)))
-        netex_points.append((m.group(1).decode(), lat, lon))
-    for m in RE_LINE_ID.finditer(xml):
-        line_ids.add(m.group(1).decode())
-
-    matched, netex_used = match_by_distance(gtfs_points, netex_points, NL_THRESHOLD_M)
-    stops = rates(matched, len(gtfs_points), len(netex_points))
-    stops["netex_pct"] = round(netex_used / len(netex_points) * 100, 2) if netex_points else 0.0
-    stops["netex_matched_distinct"] = netex_used
+        nm = RE_ANY_NAME.search(body)
+        sid = m.group(1).decode()
+        netex_places[sid] = {"id": sid,
+                             "name": _clean(nm.group(1).decode("utf-8", "replace")) if nm else "",
+                             "lat": lat, "lon": lon}
 
     routes = {"available": False,
               "note": "the Dutch NeTEx feed contains no Line elements, so routes cannot be compared"}
@@ -629,14 +782,16 @@ def run_netherlands():
     return {
         "country": "Netherlands",
         "code": "NL",
-        "method": {"stops": f"coordinates, {NL_THRESHOLD_M} m", "routes": "not comparable"},
+        "source": dict(NL_SOURCE, gtfs_url=NL_GTFS, netex_url=n["url"]),
+        "method": {"stops": f"coordinates, {NL_THRESHOLD_M} m", "routes": "not comparable",
+                   "calendars": "not implemented"},
         "release": {"gtfs": {"file": NL_GTFS.rsplit("/", 1)[-1],
                              "published": g_head.get("last-modified")},
                     "netex": {"file": n["file"], "valid_from": n["valid_from"]}},
-        "stops": stops,
+        "stops": compare_by_distance(stations, netex_places, NL_THRESHOLD_M),
         "routes": routes,
         "calendars": {"available": False,
-                      "note": "calendar extraction for this feed is not implemented yet"},
+                      "note": "this feed uses a NeTEx calendar shape that is not implemented yet"},
     }
 
 
@@ -647,6 +802,13 @@ def run_netherlands():
 CH_GTFS_PAGE = "https://data.opentransportdata.swiss/dataset/timetable-2026-gtfs2020"
 CH_NETEX_PAGE = "https://data.opentransportdata.swiss/dataset/timetablenetex_2026"
 CH_UA = {"User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/125 Safari/537.36"}
+CH_SOURCE = {
+    "portal": "data.opentransportdata.swiss",
+    "publisher": "Swiss Federal Office of Transport, open data platform mobility",
+    "page": CH_GTFS_PAGE,
+    "licence": "Open use, reference required",
+    "access": "open download, no registration",
+}
 
 RE_ZIP_URL = re.compile(r'https?://[^"\']+?\.zip')
 
@@ -698,46 +860,53 @@ def run_switzerland():
         fetch_file(g["url"], gtfs_path)
         fetch_file(n["url"], netex_path)
 
-        stations = [r for r in gtfs_table(gtfs_path, "stops.txt") if r["location_type"] == "1"]
         # The Swiss GTFS carries the national DiDok station number in its own column.
-        # The stop_id itself moved to an internal sloid scheme, which does not join.
-        gtfs_ids = {(r.get("didok") or "").strip()
-                    for r in stations if (r.get("didok") or "").strip()}
-        gtfs_labels = {re.sub(r"\s+", "", r["route_short_name"].strip().upper())
-                       for r in gtfs_table(gtfs_path, "routes.txt")
-                       if r["route_short_name"].strip()}
+        # Since June 2026 the stop_id itself uses an internal SLOID, which does not join.
+        gtfs_stops = {}
+        for r in gtfs_table(gtfs_path, "stops.txt"):
+            if r["location_type"] != "1":
+                continue
+            key = (r.get("didok") or "").strip()
+            if key:
+                gtfs_stops[key] = {"id": r["stop_id"], "name": _clean(r["stop_name"]),
+                                   "lat": float(r["stop_lat"]), "lon": float(r["stop_lon"])}
+        gtfs_routes = label_map(r["route_short_name"]
+                                for r in gtfs_table(gtfs_path, "routes.txt")
+                                if r["route_short_name"].strip())
 
         # Only two of the 438 NeTEx members carry stop places and lines. The archive
         # is about 31 GB uncompressed, so the rest is deliberately not opened.
         with zipfile.ZipFile(netex_path) as z:
-            site = next(m for m in z.namelist() if "_SITE_" in m)
-            service = next(m for m in z.namelist()
-                           if "_SERVICE_" in m and "CALENDAR" not in m)
-            site_xml = z.read(site)
-            service_xml = z.read(service)
+            site_xml = z.read(next(m for m in z.namelist() if "_SITE_" in m))
+            service_xml = z.read(next(m for m in z.namelist()
+                                      if "_SERVICE_" in m and "CALENDAR" not in m))
     finally:
         gtfs_path.unlink(missing_ok=True)
         netex_path.unlink(missing_ok=True)
 
-    netex_ids = {ch_core(x.decode())
-                 for x in RE_STOPPLACE_ID.findall(site_xml)}
-    netex_labels = set()
+    netex_stops = {}
+    for sid, rec in netex_stopplaces([site_xml]).items():
+        netex_stops[ch_core(sid)] = rec
+
+    netex_labels = []
     for m in RE_LINE_BLOCK.finditer(service_xml):
         pc = RE_PUBCODE.search(m.group(1))
         if pc and pc.group(1).strip():
-            netex_labels.add(re.sub(r"\s+", "", pc.group(1).decode().strip().upper()))
+            netex_labels.append(pc.group(1).decode("utf-8", "replace"))
+    netex_routes = label_map(netex_labels)
 
     return {
         "country": "Switzerland",
         "code": "CH",
+        "source": dict(CH_SOURCE, gtfs_url=g["url"], netex_url=n["url"]),
         "method": {"stops": "shared identifier (DiDok station number)",
-                   "routes": "public line label"},
+                   "routes": "public line label", "calendars": "not implemented"},
         "release": {"gtfs": {"file": g["file"], "valid_from": g["valid_from"]},
                     "netex": {"file": n["file"], "valid_from": n["valid_from"]}},
-        "stops": rates(len(gtfs_ids & netex_ids), len(gtfs_ids), len(netex_ids)),
-        "routes": rates(len(gtfs_labels & netex_labels), len(gtfs_labels), len(netex_labels)),
+        "stops": set_compare(gtfs_stops, netex_stops),
+        "routes": set_compare(gtfs_routes, netex_routes),
         "calendars": {"available": False,
-                      "note": "calendar extraction for this feed is not implemented yet"},
+                      "note": "this feed uses a NeTEx calendar shape that is not implemented yet"},
     }
 
 
@@ -747,6 +916,13 @@ def run_switzerland():
 
 NO_GTFS = "https://storage.googleapis.com/marduk-production/outbound/gtfs/rb_norway-aggregated-gtfs.zip"
 NO_NETEX = "https://storage.googleapis.com/marduk-production/outbound/netex/rb_norway-aggregated-netex.zip"
+NO_SOURCE = {
+    "portal": "developer.entur.org",
+    "publisher": "Entur AS, Norwegian National Access Point",
+    "page": "https://developer.entur.org/stops-and-timetable-data",
+    "licence": "NLOD",
+    "access": "open download, no registration",
+}
 
 RE_LINE_BLOCK_ID = re.compile(rb'<Line\b[^>]*\bid="([^"]+)"(.*?)</Line>', re.S)
 
@@ -759,27 +935,22 @@ def run_norway():
         fetch_file(NO_GTFS, gtfs_path)
         fetch_file(NO_NETEX, netex_path)
 
-        stations = [r for r in gtfs_table(gtfs_path, "stops.txt")
-                    if r["location_type"] == "1"]
-        gtfs_ids = {r["stop_id"].strip() for r in stations}
-        gtfs_labels = {re.sub(r"\s+", "", r["route_short_name"].strip().upper())
-                       for r in gtfs_table(gtfs_path, "routes.txt")
-                       if r["route_short_name"].strip()}
+        gtfs_stops = {r["stop_id"].strip(): {"id": r["stop_id"].strip(),
+                                             "name": _clean(r["stop_name"]),
+                                             "lat": float(r["stop_lat"]),
+                                             "lon": float(r["stop_lon"])}
+                      for r in gtfs_table(gtfs_path, "stops.txt")
+                      if r["location_type"] == "1"}
+        gtfs_routes = label_map(r["route_short_name"]
+                                for r in gtfs_table(gtfs_path, "routes.txt")
+                                if r["route_short_name"].strip())
 
-        netex_ids, netex_labels = set(), set()
+        netex_stops, netex_labels = {}, []
         with zipfile.ZipFile(netex_path) as z:
             # Every stop place lives in one member. The rest of the archive is the
             # timetable, about 5 GB uncompressed, and is not needed here.
             stops_member = next(m for m in z.namelist() if m.endswith("_stops.xml"))
-            with z.open(stops_member) as f:
-                tail = b""
-                while True:
-                    chunk = f.read(8 << 20)
-                    if not chunk:
-                        break
-                    buf = tail + chunk
-                    netex_ids |= {x.decode() for x in RE_STOPPLACE_ID.findall(buf)}
-                    tail = buf[-4096:]
+            netex_stops = netex_stopplaces([z.read(stops_member)])
 
             # Lines are published one per file. The Line element sits near the top of
             # each, so only the opening portion of every file is read.
@@ -800,16 +971,7 @@ def run_norway():
                     continue
                 pc = RE_PUBCODE.search(m.group(2))
                 if pc and pc.group(1).strip():
-                    netex_labels.add(re.sub(r"\s+", "", pc.group(1).decode().strip().upper()))
-
-            shared = [z.read(m) for m in z.namelist() if "shared_data" in m]
-
-        # The Norwegian calendar shape (weekday rule over a date range) is implemented
-        # but not yet validated against the per-country notebook, so it is withheld.
-        calendars = {"available": False,
-                     "note": "calendar extraction for this feed is implemented but not yet validated"}
-        _unvalidated = calendar_rates(gtfs_active_dates(gtfs_path),
-                                      netex_dates_via_daytype(shared))  # noqa: F841
+                    netex_labels.append(pc.group(1).decode("utf-8", "replace"))
     finally:
         gtfs_path.unlink(missing_ok=True)
         netex_path.unlink(missing_ok=True)
@@ -817,20 +979,21 @@ def run_norway():
     return {
         "country": "Norway",
         "code": "NO",
+        "source": dict(NO_SOURCE, gtfs_url=NO_GTFS, netex_url=NO_NETEX),
         "method": {"stops": "shared identifier (NSR)", "routes": "public line label",
-                   "calendars": "day-by-day activity pattern"},
+                   "calendars": "not validated"},
         "release": {"gtfs": {"file": NO_GTFS.rsplit("/", 1)[-1],
                              "published": g_head.get("last-modified")},
                     "netex": {"file": NO_NETEX.rsplit("/", 1)[-1],
                               "published": n_head.get("last-modified")}},
-        "stops": rates(len(gtfs_ids & netex_ids), len(gtfs_ids), len(netex_ids)),
-        "routes": rates(len(gtfs_labels & netex_labels), len(gtfs_labels), len(netex_labels)),
-        "calendars": calendars,
+        "stops": set_compare(gtfs_stops, netex_stops),
+        "routes": set_compare(gtfs_routes, label_map(netex_labels)),
+        "calendars": {"available": False,
+                      "note": "calendar extraction for this feed is implemented but not yet validated"},
     }
 
 
 # =========================================================================
-
 COUNTRIES = {
     "luxembourg": run_luxembourg,
     "france": run_france,

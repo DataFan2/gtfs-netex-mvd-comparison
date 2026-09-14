@@ -120,6 +120,7 @@ function dim(title, d, how){
 }
 
 function countryCard(history){
+  const keyOf = h => h[h.length-1].country.toLowerCase().replace(/\s+/g,"");
   const last = history[history.length-1];
   const cell = d => (!d || d.available === false)
     ? "&mdash;"
@@ -134,7 +135,7 @@ function countryCard(history){
 
   return `<div class="country">
     <div class="chead">
-      <h2>${last.country}</h2>
+      <h2><a href="country.html?c=${keyOf(history)}" style="text-decoration:none">${last.country}</a></h2>
       <span class="rel">GTFS ${releaseLabel(last.release.gtfs)} &nbsp;&middot;&nbsp; NeTEx ${releaseLabel(last.release.netex)}</span>
     </div>
     <div class="dims">
@@ -142,6 +143,7 @@ function countryCard(history){
       ${dim("Routes and lines",  last.routes, last.method.routes)}
       ${dim("Service calendars", last.calendars, last.method.calendars || "day-by-day activity pattern")}
     </div>
+    <div style="margin-top:14px"><a href="country.html?c=${keyOf(history)}" style="font-size:13.5px;font-weight:600">Country profile, sources and what did not match &rarr;</a></div>
     <details><summary>Run history (${history.length})</summary>
       <table><thead><tr><th>Checked</th><th>Release</th>
         <th style="text-align:right">Stops</th>
