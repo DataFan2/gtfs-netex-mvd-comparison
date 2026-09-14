@@ -190,5 +190,197 @@
       "note": "this feed uses a NeTEx calendar shape that is not implemented yet"
     },
     "checked": "2026-09-14T22:37:31Z"
+  },
+  {
+    "country": "Switzerland",
+    "code": "CH",
+    "source": {
+      "portal": "data.opentransportdata.swiss",
+      "publisher": "Swiss Federal Office of Transport, open data platform mobility",
+      "page": "https://data.opentransportdata.swiss/dataset/timetable-2026-gtfs2020",
+      "licence": "Open use, reference required",
+      "access": "open download, no registration",
+      "gtfs_url": "https://data.opentransportdata.swiss/dataset/3d2c18f9-9ef1-463f-a249-5c67604efd74/resource/8f7d5584-a4f3-445e-b12f-b86ffd2dcc7e/download/gtfs_fp2026_20260912.zip",
+      "netex_url": "https://data.opentransportdata.swiss/dataset/b46b39a4-1057-4478-8391-9bd0ff52aa58/resource/08c34aa7-8823-4854-9527-5eae5fd48b4c/download/prod_netex_tt_1.10_che_ski_2026_oev-schweiz__1_1_202609090709.zip"
+    },
+    "method": {
+      "stops": "shared identifier (DiDok station number)",
+      "routes": "public line label",
+      "calendars": "not implemented"
+    },
+    "release": {
+      "gtfs": {
+        "file": "gtfs_fp2026_20260912.zip",
+        "valid_from": "20260912"
+      },
+      "netex": {
+        "file": "prod_netex_tt_1.10_che_ski_2026_oev-schweiz__1_1_202609090709.zip",
+        "valid_from": "20260909"
+      }
+    },
+    "stops": {
+      "matched": 35492,
+      "gtfs": 35527,
+      "netex": 35594,
+      "gtfs_pct": 99.9,
+      "netex_pct": 99.71,
+      "only": {
+        "gtfs": 35,
+        "netex": 102
+      },
+      "samples": {
+        "gtfs": [
+          {
+            "id": "Parentch:1:sloid:1102001",
+            "name": "Singen (Htw), Infozentrum",
+            "lat": 47.76731939,
+            "lon": 8.81876114
+          },
+          {
+            "id": "Parentch:1:sloid:1103586",
+            "name": "Wangen (Allg), Am Gehrenberg",
+            "lat": 47.67868518,
+            "lon": 9.83454013
+          },
+          {
+            "id": "Parentch:1:sloid:1103607",
+            "name": "Wangen (Allg), Burgeliz",
+            "lat": 47.70023667,
+            "lon": 9.84192429
+          },
+          {
+            "id": "Parentch:1:sloid:1103615",
+            "name": "Wangen (Allg), Friedhof",
+            "lat": 47.6786247,
+            "lon": 9.83719915
+          },
+          {
+            "id": "Parentch:1:sloid:1103661",
+            "name": "Wangen (Allg), OSK Haupteing.",
+            "lat": 47.69306592,
+            "lon": 9.84501449
+          },
+          {
+            "id": "Parentch:1:sloid:1103681",
+            "name": "Wangen (Allg), Karpfenbachweg",
+            "lat": 47.69512777,
+            "lon": 9.84179852
+          },
+          {
+            "id": "Parentch:1:sloid:1107630",
+            "name": "Blitzenreute, Raiba",
+            "lat": 47.8634996,
+            "lon": 9.59064754
+          },
+          {
+            "id": "Parentch:1:sloid:1107714",
+            "name": "Wolpertswende, Vorsee Ort",
+            "lat": 47.88940229,
+            "lon": 9.58240998
+          },
+          {
+            "id": "Parentch:1:sloid:1108047",
+            "name": "Fronreute, Mochenwanger Str.",
+            "lat": 47.85410901,
+            "lon": 9.60429294
+          },
+          {
+            "id": "Parentch:1:sloid:1108791",
+            "name": "Wolpertswende, Bruggen",
+            "lat": 47.90314071,
+            "lon": 9.59832813
+          }
+        ],
+        "netex": [
+          {
+            "id": "ch:2:StopPlace:1",
+            "name": "Heidelberg Hbf",
+            "lat": 49.403568,
+            "lon": 8.675444
+          },
+          {
+            "id": "ch:2:StopPlace:10",
+            "name": "Petit-Martel-Est, halte",
+            "lat": 47.01475,
+            "lon": 6.766874
+          },
+          {
+            "id": "ch:2:StopPlace:1101884",
+            "name": "Radolfzell,Milchwerk/Hadwigstr",
+            "lat": 47.741259,
+            "lon": 8.972598
+          },
+          {
+            "id": "ch:2:StopPlace:1104633",
+            "name": "Waldshut, Im unteren Tal",
+            "lat": 47.624428,
+            "lon": 8.227688
+          },
+          {
+            "id": "ch:2:StopPlace:1105047",
+            "name": "Bad Saulgau, Rossgarten",
+            "lat": 48.007244,
+            "lon": 9.4923
+          },
+          {
+            "id": "ch:2:StopPlace:1107093",
+            "name": "Bad Saulgau, Hummelstrasse",
+            "lat": 48.008704,
+            "lon": 9.496531
+          },
+          {
+            "id": "ch:2:StopPlace:1107096",
+            "name": "Bad Saulgau, Bussenstrasse",
+            "lat": 48.021185,
+            "lon": 9.490746
+          },
+          {
+            "id": "ch:2:StopPlace:1107194",
+            "name": "Bad Saulgau, Eichendorffweg",
+            "lat": 48.005915,
+            "lon": 9.49504
+          },
+          {
+            "id": "ch:2:StopPlace:1107195",
+            "name": "Bad Saulgau, Goethestrasse",
+            "lat": 48.010315,
+            "lon": 9.500277
+          },
+          {
+            "id": "ch:2:StopPlace:1107196",
+            "name": "Bad Saulgau, Klosterblick",
+            "lat": 48.003962,
+            "lon": 9.490935
+          }
+        ]
+      }
+    },
+    "routes": {
+      "matched": 1852,
+      "gtfs": 1854,
+      "netex": 1852,
+      "gtfs_pct": 99.89,
+      "netex_pct": 100.0,
+      "only": {
+        "gtfs": 2,
+        "netex": 0
+      },
+      "samples": {
+        "gtfs": [
+          {
+            "label": "005B"
+          },
+          {
+            "label": "4Gelb"
+          }
+        ],
+        "netex": []
+      }
+    },
+    "calendars": {
+      "available": false,
+      "note": "this feed uses a NeTEx calendar shape that is not implemented yet"
+    },
+    "checked": "2026-09-14T22:55:45Z"
   }
 ]

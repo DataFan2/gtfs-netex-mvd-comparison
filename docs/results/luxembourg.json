@@ -74,5 +74,81 @@
       "window_to": "2026-12-12"
     },
     "checked": "2026-09-14T22:34:01Z"
+  },
+  {
+    "country": "Luxembourg",
+    "code": "LU",
+    "source": {
+      "portal": "data.public.lu",
+      "publisher": "Ministere de la Mobilite et des Travaux publics",
+      "page": "https://data.public.lu/en/datasets/horaires-et-arrets-des-transport-publics-gtfs/",
+      "licence": "CC BY 4.0",
+      "access": "open download, no registration",
+      "gtfs_url": "https://download.data.public.lu/resources/horaires-et-arrets-des-transport-publics-gtfs/20260910-051908/gtfs-20260909-20261212.zip",
+      "netex_url": "https://download.data.public.lu/resources/horaires-et-arrets-des-transport-publics-netex/20260910-052004/netex-20260909-20261212.zip"
+    },
+    "method": {
+      "stops": "shared identifier",
+      "routes": "public line label",
+      "calendars": "day-by-day activity pattern"
+    },
+    "release": {
+      "gtfs": {
+        "file": "gtfs-20260909-20261212.zip",
+        "valid_from": "20260909"
+      },
+      "netex": {
+        "file": "netex-20260909-20261212.zip",
+        "valid_from": "20260909"
+      }
+    },
+    "stops": {
+      "matched": 2820,
+      "gtfs": 2820,
+      "netex": 2821,
+      "gtfs_pct": 100.0,
+      "netex_pct": 99.96,
+      "only": {
+        "gtfs": 0,
+        "netex": 1
+      },
+      "samples": {
+        "gtfs": [],
+        "netex": [
+          {
+            "id": "LU::StopPlace:200415015_CdT::",
+            "name": "Hollerich, Garage AVL",
+            "lat": 49.598506,
+            "lon": 6.105254
+          }
+        ]
+      }
+    },
+    "routes": {
+      "matched": 713,
+      "gtfs": 713,
+      "netex": 713,
+      "gtfs_pct": 100.0,
+      "netex_pct": 100.0,
+      "only": {
+        "gtfs": 0,
+        "netex": 0
+      },
+      "samples": {
+        "gtfs": [],
+        "netex": []
+      }
+    },
+    "calendars": {
+      "matched": 293,
+      "gtfs": 362,
+      "netex": 423,
+      "gtfs_pct": 80.94,
+      "netex_pct": 69.27,
+      "window_days": 95,
+      "window_from": "2026-09-09",
+      "window_to": "2026-12-12"
+    },
+    "checked": "2026-09-14T22:55:08Z"
   }
 ]
