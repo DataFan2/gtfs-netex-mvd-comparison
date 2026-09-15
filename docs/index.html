@@ -8,7 +8,7 @@
 <style>
 :root{
   --deep:#16306F; --navy:#1F3F8F; --mid:#5A6A93; --light:#8E97B2;
-  --line:#DCE2EE; --surface:#FFFFFF; --ground:#F6F8FC; --sunk:#EDF1F7;
+  --line:#DCE2EE; --surface:#FFFFFF; --ground:#FFFFFF; --sunk:#EDF1F7;
   --good:#1F7A54; --good-bg:#E2F0E9;
   --gtfs:#80AADD; --netex:#D4744F;
 }
@@ -61,6 +61,13 @@ p{color:var(--mid);max-width:68ch;margin:0 0 12px}
 code{font-family:"IBM Plex Mono",monospace;font-size:13px;background:var(--sunk);
   padding:2px 6px;border-radius:3px;color:var(--deep)}
 .err{background:#FCEEEC;border:1px solid #E0B4AC;color:#8E3626;padding:14px 16px;border-radius:4px}
+.cta{background:var(--surface);border:1px solid var(--line);border-radius:5px;
+  padding:24px 26px;margin-top:26px}
+.cta h3{font-size:19px;font-weight:700;margin:0 0 8px}
+.cta p{margin:0 0 16px}
+.btn{display:inline-block;background:var(--navy);color:#fff;text-decoration:none;
+  font-weight:600;font-size:15px;padding:11px 22px;border-radius:100px}
+.btn:hover{background:var(--deep)}
 footer{margin-top:40px;padding-top:18px;border-top:1px solid var(--line);font-size:13.5px;color:var(--light)}
 a{color:var(--navy)}
 </style>
@@ -182,6 +189,14 @@ fetch("results/index.json", {cache:"no-store"})
      <p>Only countries whose feeds can be downloaded without registration or an API key can be
      monitored this way. That constraint, rather than data quality, is what limits the list.</p>
      </section>`;
+
+   out += `<section class="cta">
+     <h3>Following this work?</h3>
+     <p>The monitor reruns every Monday. Leave your address if you would like to hear
+     how the work develops.</p>
+     <a class="btn" href="https://docs.google.com/forms/d/e/1FAIpQLSfekaDr4UtXrN8onzZ1KgrkSHQQEPommVrBQCMOs2-_zBrQCA/viewform"
+        target="_blank" rel="noopener">Keep me posted</a>
+   </section>`;
 
    document.getElementById("body").innerHTML = out;
  })
