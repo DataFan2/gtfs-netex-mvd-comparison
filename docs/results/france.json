@@ -262,5 +262,93 @@
       "window_to": "2027-02-17"
     },
     "checked": "2026-09-21T09:46:31Z"
+  },
+  {
+    "country": "France",
+    "code": "FR",
+    "source": {
+      "portal": "transport.data.gouv.fr",
+      "publisher": "SNCF Voyageurs, via the French National Access Point",
+      "page": "https://transport.data.gouv.fr/datasets/horaires-sncf",
+      "licence": "ODbL",
+      "access": "open download, no registration",
+      "gtfs_url": "https://eu.ftp.opendatasoft.com/sncf/plandata/Export_OpenData_SNCF_GTFS_NewTripId.zip",
+      "netex_url": "https://eu.ftp.opendatasoft.com/sncf/plandata/export-opendata-sncf-netex.zip"
+    },
+    "method": {
+      "stops": "coordinates, 50 m",
+      "routes": "shared identifier",
+      "calendars": "day-by-day activity pattern"
+    },
+    "release": {
+      "gtfs": {
+        "file": "Export_OpenData_SNCF_GTFS_NewTripId.zip",
+        "published": "Sun, 27 Sep 2026 19:39:49 GMT"
+      },
+      "netex": {
+        "file": "export-opendata-sncf-netex.zip",
+        "published": "Sun, 27 Sep 2026 19:25:43 GMT"
+      }
+    },
+    "stops": {
+      "matched": 3437,
+      "gtfs": 3437,
+      "netex": 3437,
+      "gtfs_pct": 100.0,
+      "netex_pct": 99.91,
+      "only": {
+        "gtfs": 0,
+        "netex": 3
+      },
+      "samples": {
+        "gtfs": [],
+        "netex": [
+          {
+            "id": "FR::LMO:85f57e50-cb0a-11e8-8bfa-f784c1c7c611:",
+            "name": "Lutterbach Tram-train",
+            "lat": 47.758214,
+            "lon": 7.276994
+          },
+          {
+            "id": "FR::LMO:a3764f70-0c8b-11ec-87a4-41ed5fc90f53:",
+            "name": "Ancenis Bis",
+            "lat": 47.369334,
+            "lon": -1.177763
+          },
+          {
+            "id": "FR::LMU:7e4c4800-cb0a-11e8-8bfa-f784c1c7c611:",
+            "name": "Paris Montparnasse Vaugirard",
+            "lat": 48.841172,
+            "lon": 2.320514
+          }
+        ]
+      }
+    },
+    "routes": {
+      "matched": 712,
+      "gtfs": 712,
+      "netex": 712,
+      "gtfs_pct": 100.0,
+      "netex_pct": 100.0,
+      "only": {
+        "gtfs": 0,
+        "netex": 0
+      },
+      "samples": {
+        "gtfs": [],
+        "netex": []
+      }
+    },
+    "calendars": {
+      "matched": 8275,
+      "gtfs": 8394,
+      "netex": 8615,
+      "gtfs_pct": 98.58,
+      "netex_pct": 96.05,
+      "window_days": 151,
+      "window_from": "2026-09-27",
+      "window_to": "2027-02-24"
+    },
+    "checked": "2026-09-28T10:42:48Z"
   }
 ]
