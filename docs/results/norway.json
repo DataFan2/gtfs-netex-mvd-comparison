@@ -545,5 +545,147 @@
       "note": "calendar extraction for this feed is implemented but not yet validated"
     },
     "checked": "2026-09-28T10:43:39Z"
+  },
+  {
+    "country": "Norway",
+    "code": "NO",
+    "source": {
+      "portal": "developer.entur.org",
+      "publisher": "Entur AS, Norwegian National Access Point",
+      "page": "https://developer.entur.org/stops-and-timetable-data",
+      "licence": "NLOD",
+      "access": "open download, no registration",
+      "gtfs_url": "https://storage.googleapis.com/marduk-production/outbound/gtfs/rb_norway-aggregated-gtfs.zip",
+      "netex_url": "https://storage.googleapis.com/marduk-production/outbound/netex/rb_norway-aggregated-netex.zip"
+    },
+    "method": {
+      "stops": "shared identifier (NSR)",
+      "routes": "public line label",
+      "calendars": "not validated"
+    },
+    "release": {
+      "gtfs": {
+        "file": "rb_norway-aggregated-gtfs.zip",
+        "published": "Mon, 05 Oct 2026 11:03:03 GMT"
+      },
+      "netex": {
+        "file": "rb_norway-aggregated-netex.zip",
+        "published": "Mon, 05 Oct 2026 10:54:50 GMT"
+      }
+    },
+    "stops": {
+      "matched": 51203,
+      "gtfs": 51204,
+      "netex": 58014,
+      "gtfs_pct": 100.0,
+      "netex_pct": 88.26,
+      "only": {
+        "gtfs": 1,
+        "netex": 6811
+      },
+      "samples": {
+        "gtfs": [
+          {
+            "id": "NSR:StopPlace:35789",
+            "name": "Espe",
+            "lat": 61.99749,
+            "lon": 6.58314
+          }
+        ],
+        "netex": [
+          {
+            "id": "NSR:StopPlace:1006",
+            "name": "Str\u00f8mnes",
+            "lat": 59.337577,
+            "lon": 11.146782
+          },
+          {
+            "id": "NSR:StopPlace:10151",
+            "name": "Varaldskogen",
+            "lat": 60.151821,
+            "lon": 12.443316
+          },
+          {
+            "id": "NSR:StopPlace:10154",
+            "name": "Lundeby",
+            "lat": 60.129276,
+            "lon": 12.476674
+          },
+          {
+            "id": "NSR:StopPlace:10314",
+            "name": "Bys\u00e6tervika",
+            "lat": 60.829237,
+            "lon": 10.921893
+          },
+          {
+            "id": "NSR:StopPlace:10363",
+            "name": "Ildervegen",
+            "lat": 60.177473,
+            "lon": 12.018469
+          },
+          {
+            "id": "NSR:StopPlace:10379",
+            "name": "Arendalkrysset",
+            "lat": 60.785149,
+            "lon": 10.870517
+          },
+          {
+            "id": "NSR:StopPlace:10539",
+            "name": "Jernbanegata 58",
+            "lat": 60.187958,
+            "lon": 11.995732
+          },
+          {
+            "id": "NSR:StopPlace:10558",
+            "name": "Bassengvegen",
+            "lat": 60.937285,
+            "lon": 10.709727
+          },
+          {
+            "id": "NSR:StopPlace:10595",
+            "name": "Vikingskipet",
+            "lat": 60.794453,
+            "lon": 11.09956
+          },
+          {
+            "id": "NSR:StopPlace:10618",
+            "name": "Rysvea",
+            "lat": 60.811426,
+            "lon": 11.16702
+          }
+        ]
+      }
+    },
+    "routes": {
+      "matched": 2260,
+      "gtfs": 2262,
+      "netex": 2261,
+      "gtfs_pct": 99.91,
+      "netex_pct": 99.96,
+      "only": {
+        "gtfs": 2,
+        "netex": 1
+      },
+      "samples": {
+        "gtfs": [
+          {
+            "label": "FLY1"
+          },
+          {
+            "label": "FLY2"
+          }
+        ],
+        "netex": [
+          {
+            "label": "Voss Gondol"
+          }
+        ]
+      }
+    },
+    "calendars": {
+      "available": false,
+      "note": "calendar extraction for this feed is implemented but not yet validated"
+    },
+    "checked": "2026-10-05T11:18:12Z"
   }
 ]

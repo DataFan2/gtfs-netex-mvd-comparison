@@ -698,5 +698,180 @@
       "note": "this feed uses a NeTEx calendar shape that is not implemented yet"
     },
     "checked": "2026-09-28T10:44:28Z"
+  },
+  {
+    "country": "Netherlands",
+    "code": "NL",
+    "source": {
+      "portal": "ovapi.nl and ndovloket.nl",
+      "publisher": "OVapi (GTFS), DOVA via NDOV Loket (NeTEx)",
+      "page": "https://data.ndovloket.nl/netex/epiap/",
+      "licence": "CC0 1.0",
+      "access": "open download, no registration",
+      "gtfs_url": "https://gtfs.ovapi.nl/nl/gtfs-nl.zip",
+      "netex_url": "https://data.ndovloket.nl/netex/epiap/NeTEx_DOVA_epiap_2026-10-01.xml.gz"
+    },
+    "method": {
+      "stops": "coordinates, 50 m",
+      "routes": "not comparable",
+      "calendars": "not implemented"
+    },
+    "release": {
+      "gtfs": {
+        "file": "gtfs-nl.zip",
+        "published": "Sat, 03 Oct 2026 20:58:37 GMT"
+      },
+      "netex": {
+        "file": "NeTEx_DOVA_epiap_2026-10-01.xml.gz",
+        "valid_from": "20261001"
+      }
+    },
+    "stops": {
+      "matched": 15908,
+      "gtfs": 17031,
+      "netex": 25562,
+      "gtfs_pct": 93.41,
+      "netex_pct": 57.76,
+      "only": {
+        "gtfs": 1123,
+        "netex": 10798
+      },
+      "samples": {
+        "gtfs": [
+          {
+            "id": "stoparea:109705",
+            "name": "Tongeren",
+            "lat": 50.7841041,
+            "lon": 5.4740053
+          },
+          {
+            "id": "stoparea:109707",
+            "name": "Liers",
+            "lat": 50.6981689,
+            "lon": 5.5687495
+          },
+          {
+            "id": "stoparea:109709",
+            "name": "Glons",
+            "lat": 50.7506633,
+            "lon": 5.5351934
+          },
+          {
+            "id": "stoparea:109711",
+            "name": "Bilzen",
+            "lat": 50.8686612478878,
+            "lon": 5.50937635272466
+          },
+          {
+            "id": "stoparea:109712",
+            "name": "Herstal",
+            "lat": 50.6602895,
+            "lon": 5.6222099
+          },
+          {
+            "id": "stoparea:109714",
+            "name": "Diepenbeek",
+            "lat": 50.9106695409191,
+            "lon": 5.41991208112963
+          },
+          {
+            "id": "stoparea:109715",
+            "name": "Hasselt",
+            "lat": 50.93077555856,
+            "lon": 5.32705584681
+          },
+          {
+            "id": "stoparea:116635",
+            "name": "Barneveld Zuid",
+            "lat": 52.128821,
+            "lon": 5.60232,
+            "nearest_m": 52
+          },
+          {
+            "id": "stoparea:124586",
+            "name": "Eilendorf",
+            "lat": 50.785556,
+            "lon": 6.154583
+          },
+          {
+            "id": "stoparea:124588",
+            "name": "Aachen Rothe Erde",
+            "lat": 50.770058,
+            "lon": 6.116353
+          }
+        ],
+        "netex": [
+          {
+            "id": "BE:CHB:StopPlace:11010020",
+            "name": "Antwerpen, Noorderplaats",
+            "lat": 51.229339747192334,
+            "lon": 4.415432260401527
+          },
+          {
+            "id": "BE:CHB:StopPlace:11010100",
+            "name": "Antwerpen, Halewijn",
+            "lat": 51.2204973287282,
+            "lon": 4.3798759286527815
+          },
+          {
+            "id": "BE:CHB:StopPlace:22010010",
+            "name": "Gent, Dampoort",
+            "lat": 51.057520263900756,
+            "lon": 3.740315832122714
+          },
+          {
+            "id": "BE:CHB:StopPlace:35000000",
+            "name": "Budel-Schoot, Hamont Station",
+            "lat": 51.24655002483782,
+            "lon": 5.544855753912417
+          },
+          {
+            "id": "BE:CHB:StopPlace:36202058",
+            "name": "Maldegem, Station",
+            "lat": 51.20502852771859,
+            "lon": 3.44798273228094
+          },
+          {
+            "id": "BE:CHB:StopPlace:36202105",
+            "name": "Watervliet, Dorp",
+            "lat": 51.275976994047795,
+            "lon": 3.6261485528799384
+          },
+          {
+            "id": "BE:CHB:StopPlace:36202642",
+            "name": "Wachtebeke, Domein Puyenbroek P1",
+            "lat": 51.153059865407464,
+            "lon": 3.871665567653497
+          },
+          {
+            "id": "BE:CHB:StopPlace:36202709",
+            "name": "Assenede, Markt",
+            "lat": 51.227417652676706,
+            "lon": 3.752901078907549
+          },
+          {
+            "id": "BE:CHB:StopPlace:36202719",
+            "name": "Zelzate, Busstation",
+            "lat": 51.200998728730696,
+            "lon": 3.808449499644332
+          },
+          {
+            "id": "BE:CHB:StopPlace:36203245",
+            "name": "Eeklo, Station",
+            "lat": 51.18123962011883,
+            "lon": 3.5744549602399753
+          }
+        ]
+      }
+    },
+    "routes": {
+      "available": false,
+      "note": "the Dutch NeTEx feed contains no Line elements, so routes cannot be compared"
+    },
+    "calendars": {
+      "available": false,
+      "note": "this feed uses a NeTEx calendar shape that is not implemented yet"
+    },
+    "checked": "2026-10-05T11:19:08Z"
   }
 ]
