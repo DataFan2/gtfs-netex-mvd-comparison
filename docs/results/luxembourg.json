@@ -364,5 +364,74 @@
       "window_to": "2026-12-12"
     },
     "checked": "2026-10-05T11:16:56Z"
+  },
+  {
+    "country": "Luxembourg",
+    "code": "LU",
+    "source": {
+      "portal": "data.public.lu",
+      "publisher": "Ministere de la Mobilite et des Travaux publics",
+      "page": "https://data.public.lu/en/datasets/horaires-et-arrets-des-transport-publics-gtfs/",
+      "licence": "CC BY 4.0",
+      "access": "open download, no registration",
+      "gtfs_url": "https://download.data.public.lu/resources/horaires-et-arrets-des-transport-publics-gtfs/20261008-043621/gtfs-20261007-20261212.zip",
+      "netex_url": "https://download.data.public.lu/resources/horaires-et-arrets-des-transport-publics-netex/20261008-043651/netex-20261007-20261212.zip"
+    },
+    "method": {
+      "stops": "shared identifier",
+      "routes": "public line label",
+      "calendars": "day-by-day activity pattern"
+    },
+    "release": {
+      "gtfs": {
+        "file": "gtfs-20261007-20261212.zip",
+        "valid_from": "20261007"
+      },
+      "netex": {
+        "file": "netex-20261007-20261212.zip",
+        "valid_from": "20261007"
+      }
+    },
+    "stops": {
+      "matched": 2805,
+      "gtfs": 2805,
+      "netex": 2805,
+      "gtfs_pct": 100.0,
+      "netex_pct": 100.0,
+      "only": {
+        "gtfs": 0,
+        "netex": 0
+      },
+      "samples": {
+        "gtfs": [],
+        "netex": []
+      }
+    },
+    "routes": {
+      "matched": 706,
+      "gtfs": 706,
+      "netex": 706,
+      "gtfs_pct": 100.0,
+      "netex_pct": 100.0,
+      "only": {
+        "gtfs": 0,
+        "netex": 0
+      },
+      "samples": {
+        "gtfs": [],
+        "netex": []
+      }
+    },
+    "calendars": {
+      "matched": 217,
+      "gtfs": 250,
+      "netex": 311,
+      "gtfs_pct": 86.8,
+      "netex_pct": 69.77,
+      "window_days": 67,
+      "window_from": "2026-10-07",
+      "window_to": "2026-12-12"
+    },
+    "checked": "2026-10-12T11:45:45Z"
   }
 ]
