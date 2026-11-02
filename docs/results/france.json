@@ -734,5 +734,101 @@
       "window_to": "2027-03-24"
     },
     "checked": "2026-10-26T09:55:20Z"
+  },
+  {
+    "country": "France",
+    "code": "FR",
+    "source": {
+      "portal": "transport.data.gouv.fr",
+      "publisher": "SNCF Voyageurs, via the French National Access Point",
+      "page": "https://transport.data.gouv.fr/datasets/horaires-sncf",
+      "licence": "ODbL",
+      "access": "open download, no registration",
+      "gtfs_url": "https://eu.ftp.opendatasoft.com/sncf/plandata/Export_OpenData_SNCF_GTFS_NewTripId.zip",
+      "netex_url": "https://eu.ftp.opendatasoft.com/sncf/plandata/export-opendata-sncf-netex.zip"
+    },
+    "method": {
+      "stops": "coordinates, 50 m",
+      "routes": "shared identifier",
+      "calendars": "day-by-day activity pattern"
+    },
+    "release": {
+      "gtfs": {
+        "file": "Export_OpenData_SNCF_GTFS_NewTripId.zip",
+        "published": "Sun, 01 Nov 2026 21:10:00 GMT"
+      },
+      "netex": {
+        "file": "export-opendata-sncf-netex.zip",
+        "published": "Sun, 01 Nov 2026 20:57:03 GMT"
+      }
+    },
+    "stops": {
+      "matched": 3424,
+      "gtfs": 3425,
+      "netex": 3424,
+      "gtfs_pct": 99.97,
+      "netex_pct": 99.91,
+      "only": {
+        "gtfs": 1,
+        "netex": 3
+      },
+      "samples": {
+        "gtfs": [
+          {
+            "id": "StopArea:OCE87338590",
+            "name": "Monte-Carlo Country Club",
+            "lat": 43.754354,
+            "lon": 7.448208,
+            "nearest_m": 1012
+          }
+        ],
+        "netex": [
+          {
+            "id": "FR::LMO:85f57e50-cb0a-11e8-8bfa-f784c1c7c611:",
+            "name": "Lutterbach Tram-train",
+            "lat": 47.758214,
+            "lon": 7.276994
+          },
+          {
+            "id": "FR::LMO:a3764f70-0c8b-11ec-87a4-41ed5fc90f53:",
+            "name": "Ancenis Bis",
+            "lat": 47.369334,
+            "lon": -1.177763
+          },
+          {
+            "id": "FR::LMU:7e4c4800-cb0a-11e8-8bfa-f784c1c7c611:",
+            "name": "Paris Montparnasse Vaugirard",
+            "lat": 48.841172,
+            "lon": 2.320514
+          }
+        ]
+      }
+    },
+    "routes": {
+      "matched": 712,
+      "gtfs": 712,
+      "netex": 712,
+      "gtfs_pct": 100.0,
+      "netex_pct": 100.0,
+      "only": {
+        "gtfs": 0,
+        "netex": 0
+      },
+      "samples": {
+        "gtfs": [],
+        "netex": []
+      }
+    },
+    "calendars": {
+      "matched": 7992,
+      "gtfs": 8021,
+      "netex": 8218,
+      "gtfs_pct": 99.64,
+      "netex_pct": 97.25,
+      "window_days": 151,
+      "window_from": "2026-11-01",
+      "window_to": "2027-03-31"
+    },
+    "checked": "2026-11-02T12:07:39Z"
   }
 ]
