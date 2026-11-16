@@ -1951,5 +1951,194 @@
       "note": "this feed uses a NeTEx calendar shape that is not implemented yet"
     },
     "checked": "2026-11-09T12:40:32Z"
+  },
+  {
+    "country": "Switzerland",
+    "code": "CH",
+    "source": {
+      "portal": "data.opentransportdata.swiss",
+      "publisher": "Swiss Federal Office of Transport, open data platform mobility",
+      "page": "https://data.opentransportdata.swiss/dataset/timetable-2026-gtfs2020",
+      "licence": "Open use, reference required",
+      "access": "open download, no registration",
+      "gtfs_url": "https://data.opentransportdata.swiss/dataset/3d2c18f9-9ef1-463f-a249-5c67604efd74/resource/c19fcd23-d911-4a7d-8f61-2d7d4dff23d1/download/gtfs_fp2026_20261114.zip",
+      "netex_url": "https://data.opentransportdata.swiss/dataset/b46b39a4-1057-4478-8391-9bd0ff52aa58/resource/1294ff7d-772d-4aa4-aaf3-0e0a7a09d898/download/prod_netex_tt_1.10_che_ski_2026_oev-schweiz__1_1_202611110911.zip"
+    },
+    "method": {
+      "stops": "shared identifier (DiDok station number)",
+      "routes": "public line label",
+      "calendars": "not implemented"
+    },
+    "release": {
+      "gtfs": {
+        "file": "gtfs_fp2026_20261114.zip",
+        "valid_from": "20261114"
+      },
+      "netex": {
+        "file": "prod_netex_tt_1.10_che_ski_2026_oev-schweiz__1_1_202611110911.zip",
+        "valid_from": "20261111"
+      }
+    },
+    "stops": {
+      "matched": 35532,
+      "gtfs": 35547,
+      "netex": 35653,
+      "gtfs_pct": 99.96,
+      "netex_pct": 99.66,
+      "only": {
+        "gtfs": 15,
+        "netex": 121
+      },
+      "samples": {
+        "gtfs": [
+          {
+            "id": "Parent8002140",
+            "name": "Augsburg Hbf",
+            "lat": 48.36544121,
+            "lon": 10.88556902
+          },
+          {
+            "id": "Parent8003025",
+            "name": "Berlin-Spandau",
+            "lat": 52.53464782,
+            "lon": 13.19689831
+          },
+          {
+            "id": "Parent8007799",
+            "name": "Berlin Gesundbrunnen",
+            "lat": 52.54896191,
+            "lon": 13.38850896
+          },
+          {
+            "id": "Parent8014021",
+            "name": "Heidelberg Hbf",
+            "lat": 49.40356832,
+            "lon": 8.67544392
+          },
+          {
+            "id": "Parent8014431",
+            "name": "Basel Bad Bf",
+            "lat": 47.56780001,
+            "lon": 7.60820045
+          },
+          {
+            "id": "Parent8019051",
+            "name": "Mainz Hbf",
+            "lat": 50.00111534,
+            "lon": 8.25872445
+          },
+          {
+            "id": "Parent8019068",
+            "name": "Worms Hbf",
+            "lat": 49.63493838,
+            "lon": 8.35645217
+          },
+          {
+            "id": "Parent8023002",
+            "name": "Halle (Saale) Hbf",
+            "lat": 51.47750798,
+            "lon": 11.98708322
+          },
+          {
+            "id": "Parent8029779",
+            "name": "Vaihingen (Enz)",
+            "lat": 48.94811986,
+            "lon": 8.9576317
+          },
+          {
+            "id": "Parent8065971",
+            "name": "Berlin S\u00fcdkreuz",
+            "lat": 52.47504669,
+            "lon": 13.36532344
+          }
+        ],
+        "netex": [
+          {
+            "id": "ch:2:StopPlace:1",
+            "name": "Heidelberg Hbf",
+            "lat": 49.403568,
+            "lon": 8.675444
+          },
+          {
+            "id": "ch:2:StopPlace:10",
+            "name": "Petit-Martel-Est, halte",
+            "lat": 47.01475,
+            "lon": 6.766874
+          },
+          {
+            "id": "ch:2:StopPlace:1101345",
+            "name": "Dingelsdorf, Klausenhorn",
+            "lat": 47.742636,
+            "lon": 9.14785
+          },
+          {
+            "id": "ch:2:StopPlace:1101349",
+            "name": "Dingelsdorf, Wallhauser Str.",
+            "lat": 47.740576,
+            "lon": 9.151919
+          },
+          {
+            "id": "ch:2:StopPlace:1101630",
+            "name": "Konstanz, Urisberg",
+            "lat": 47.690121,
+            "lon": 9.151282
+          },
+          {
+            "id": "ch:2:StopPlace:1101688",
+            "name": "Markelfingen, Landg. Wildpark",
+            "lat": 47.74289,
+            "lon": 9.043771
+          },
+          {
+            "id": "ch:2:StopPlace:1101884",
+            "name": "Radolfzell,Milchwerk/Hadwigstr",
+            "lat": 47.741259,
+            "lon": 8.972598
+          },
+          {
+            "id": "ch:2:StopPlace:1102265",
+            "name": "Wallhausen (KN), Hafen",
+            "lat": 47.746823,
+            "lon": 9.135166
+          },
+          {
+            "id": "ch:2:StopPlace:1102300",
+            "name": "Wollmatingen, Kindlebildstr.",
+            "lat": 47.691421,
+            "lon": 9.145433
+          },
+          {
+            "id": "ch:2:StopPlace:1104633",
+            "name": "Waldshut, Im unteren Tal",
+            "lat": 47.624428,
+            "lon": 8.227688
+          }
+        ]
+      }
+    },
+    "routes": {
+      "matched": 1854,
+      "gtfs": 1855,
+      "netex": 1854,
+      "gtfs_pct": 99.95,
+      "netex_pct": 100.0,
+      "only": {
+        "gtfs": 1,
+        "netex": 0
+      },
+      "samples": {
+        "gtfs": [
+          {
+            "label": "6X"
+          }
+        ],
+        "netex": []
+      }
+    },
+    "calendars": {
+      "available": false,
+      "note": "this feed uses a NeTEx calendar shape that is not implemented yet"
+    },
+    "checked": "2026-11-16T12:32:10Z"
   }
 ]
